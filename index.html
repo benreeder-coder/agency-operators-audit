@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Agency Audit | Agency Operators</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-white: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-focus: #3b82f6;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-yellow: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-green: #10b981;
+            --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #ec4899 100%);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 0;
+            overflow-y: auto;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            max-width: 140px;
+            height: auto;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-progress {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .sidebar-progress-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-progress-bar {
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-progress-fill {
+            height: 100%;
+            background: var(--accent-blue);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .sidebar-progress-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav-item:hover {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav-item.active {
+            background: rgba(59, 130, 246, 0.08);
+            color: var(--accent-blue);
+            border-left-color: var(--accent-blue);
+        }
+
+        .sidebar-nav-item.completed .nav-check {
+            opacity: 1;
+            color: var(--accent-green);
+        }
+
+        .nav-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav-item.active .nav-number {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .sidebar-nav-item.completed .nav-number {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .nav-check {
+            margin-left: auto;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-check svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 40px 80px;
+        }
+
+        .main-container > * {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-top: 20px;
+        }
+
+        .logo {
+            max-width: 220px;
+            height: auto;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .page-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Progress Info */
+        .progress-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 12px 20px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            display: inline-flex;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-info strong {
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .form-section:nth-child(1) { animation-delay: 0.05s; }
+        .form-section:nth-child(2) { animation-delay: 0.1s; }
+        .form-section:nth-child(3) { animation-delay: 0.15s; }
+        .form-section:nth-child(4) { animation-delay: 0.2s; }
+        .form-section:nth-child(5) { animation-delay: 0.25s; }
+        .form-section:nth-child(6) { animation-delay: 0.3s; }
+        .form-section:nth-child(7) { animation-delay: 0.35s; }
+        .form-section:nth-child(8) { animation-delay: 0.4s; }
+        .form-section:nth-child(9) { animation-delay: 0.45s; }
+        .form-section:nth-child(10) { animation-delay: 0.5s; }
+        .form-section:nth-child(11) { animation-delay: 0.55s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-header {
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-badge {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-label .optional {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-left: 6px;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-textarea.large {
+            min-height: 160px;
+        }
+
+        /* Grid layouts */
+        .form-row {
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-row.two-col {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .form-row.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-row.four-col {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* Monthly Metrics - Compact Grid */
+        .metrics-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 180px repeat(12, 1fr);
+            gap: 6px;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .metric-header {
+            display: grid;
+            grid-template-columns: 180px repeat(12, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metric-header span {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .metric-header span:first-child {
+            text-align: left;
+        }
+
+        .metric-input {
+            width: 100%;
+            padding: 8px 4px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .metric-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: var(--bg-white);
+        }
+
+        .metric-input::placeholder {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+        }
+
+        /* Submit Section */
+        .submit-section {
+            margin-top: 48px;
+        }
+
+        .submit-card {
+            background: var(--bg-white);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .submit-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .submit-description {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 48px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+        }
+
+        .submit-btn:hover {
+            background: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Status Messages */
+        .status-message {
+            margin-top: 20px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-message.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            color: #047857;
+        }
+
+        .status-message.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #dc2626;
+        }
+
+        /* Auto-save indicator */
+        .autosave-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 10px 16px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .autosave-indicator.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .autosave-indicator svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-green);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-container {
+                margin-left: 0;
+                width: 100%;
+                padding: 24px 16px 60px;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px;
+                background: var(--bg-white);
+                border-bottom: 1px solid var(--border-color);
+                position: sticky;
+                top: 0;
+                z-index: 50;
+            }
+
+            .mobile-menu-btn {
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                background: var(--bg-white);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .mobile-menu-btn svg {
+                width: 20px;
+                height: 20px;
+                color: var(--text-primary);
+            }
+
+            .mobile-progress {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--accent-blue);
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.3);
+                z-index: 99;
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+        }
+
+        @media (min-width: 901px) {
+            .mobile-header {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .form-card {
+                padding: 24px 20px;
+            }
+
+            .form-row.two-col,
+            .form-row.three-col,
+            .form-row.four-col {
+                grid-template-columns: 1fr;
+            }
+
+            /* Stack metrics on mobile */
+            .metric-header {
+                display: none;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 16px;
+                background: var(--bg-input);
+                border-radius: 10px;
+                margin-bottom: 12px;
+            }
+
+            .metric-label {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .metrics-mobile-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .metric-input {
+                padding: 10px 6px;
+            }
+        }
+
+        /* Loading state for submit button */
+        .submit-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="assets/logo.jpg" alt="Agency Operators" class="sidebar-logo">
+            <div class="sidebar-progress">
+                <div class="sidebar-progress-label">Your Progress</div>
+                <div class="sidebar-progress-bar">
+                    <div class="sidebar-progress-fill" id="sidebarProgressFill"></div>
+                </div>
+                <div class="sidebar-progress-text"><span id="sidebarProgressPercent">0%</span> Complete</div>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            <a href="#contact" class="sidebar-nav-item active" data-section="contact">
+                <span class="nav-number">1</span>
+                <span>Contact Info</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#strategy" class="sidebar-nav-item" data-section="strategy">
+                <span class="nav-number">2</span>
+                <span>Strategy</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#goals" class="sidebar-nav-item" data-section="goals">
+                <span class="nav-number">3</span>
+                <span>Goals</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#leadgen" class="sidebar-nav-item" data-section="leadgen">
+                <span class="nav-number">4</span>
+                <span>Lead Generation</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#leadnurture" class="sidebar-nav-item" data-section="leadnurture">
+                <span class="nav-number">5</span>
+                <span>Lead Nurture</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#sales" class="sidebar-nav-item" data-section="sales">
+                <span class="nav-number">6</span>
+                <span>Sales</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#recruiting" class="sidebar-nav-item" data-section="recruiting">
+                <span class="nav-number">7</span>
+                <span>Recruiting</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#operations" class="sidebar-nav-item" data-section="operations">
+                <span class="nav-number">8</span>
+                <span>Operations</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#financials" class="sidebar-nav-item" data-section="financials">
+                <span class="nav-number">9</span>
+                <span>Financials</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#voiceofdata" class="sidebar-nav-item" data-section="voiceofdata">
+                <span class="nav-number">10</span>
+                <span>Voice of Data</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+            <a href="#actionplan" class="sidebar-nav-item" data-section="actionplan">
+                <span class="nav-number">11</span>
+                <span>Action Plan</span>
+                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        <span class="mobile-progress"><span id="mobileProgressPercent">0%</span> Complete</span>
+    </div>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="page-header">
+            <img src="assets/logo.jpg" alt="Agency Operators" class="logo">
+            <h1 class="page-title">Full Agency Audit</h1>
+            <p class="page-subtitle">Please fill this audit form out to the best of your ability. If you do not know the answer, you can leave it blank and we will help you.</p>
+            <div class="progress-info">
+                <span>Progress:</span>
+                <strong id="progressPercent">0%</strong>
+                <span>complete</span>
+            </div>
+        </header>
+
+        <form id="auditForm">
+            <!-- Section 1: Contact Info -->
+            <section class="form-section" id="contact">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 1</span>
+                        <h2 class="section-title">Contact Info</h2>
+                        <p class="section-description">Let's start with your basic contact information.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="yourName">Your Name</label>
+                        <input type="text" class="form-input" id="yourName" name="yourName" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label class="form-label" for="yourEmail">Your Email</label>
+                            <input type="email" class="form-input" id="yourEmail" name="yourEmail" placeholder="you@company.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="yourPhone">Your Phone #</label>
+                            <input type="tel" class="form-input" id="yourPhone" name="yourPhone" placeholder="+1 (555) 123-4567">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="companyName">Company Name</label>
+                        <input type="text" class="form-input" id="companyName" name="companyName" placeholder="Your Agency Name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="personalAddress">Personal Address <span class="optional">(for shipping)</span></label>
+                        <textarea class="form-textarea" id="personalAddress" name="personalAddress" placeholder="Street address, City, State/Province, Postal Code, Country"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="preferredContact">Preferred Contact Method</label>
+                        <input type="text" class="form-input" id="preferredContact" name="preferredContact" placeholder="e.g., Slack, Email, SMS, Phone">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Strategy -->
+            <section class="form-section" id="strategy">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 2</span>
+                        <h2 class="section-title">Strategy</h2>
+                        <p class="section-description">Tell us about your agency's strategic direction.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="strategy">What is your Strategy?</label>
+                        <p class="form-hint">Your core strategic approach to the market</p>
+                        <textarea class="form-textarea large" id="strategy" name="strategy" placeholder="Describe your agency's strategic positioning..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mission">What is your Mission?</label>
+                        <p class="form-hint">Your agency's purpose and reason for existence</p>
+                        <textarea class="form-textarea large" id="mission" name="mission" placeholder="Describe your mission statement..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vision">What is your Vision?</label>
+                        <p class="form-hint">Where you see your agency in the future</p>
+                        <textarea class="form-textarea large" id="vision" name="vision" placeholder="Describe your vision for the agency..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="coreValues">What are your Core Values?</label>
+                        <textarea class="form-textarea" id="coreValues" name="coreValues" placeholder="List your agency's core values..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="newClientOffer">What is your New Client Offer / Pricing?</label>
+                        <p class="form-hint">Include setup fees, monthly retainers, contract terms, etc.</p>
+                        <textarea class="form-textarea large" id="newClientOffer" name="newClientOffer" placeholder="Describe your pricing structure, packages, and terms..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="services">What Services do you sell?</label>
+                        <textarea class="form-textarea" id="services" name="services" placeholder="List all services you offer..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="icp">Who is your ICP (Ideal Customer Profile)?</label>
+                        <p class="form-hint">Include job titles, company types, industries, and examples if possible</p>
+                        <textarea class="form-textarea large" id="icp" name="icp" placeholder="Describe your ideal customer profile..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="clientValue">What do your Clients really Value?</label>
+                        <textarea class="form-textarea" id="clientValue" name="clientValue" placeholder="What matters most to your clients?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="clientCountries">What countries are your clients in?</label>
+                        <input type="text" class="form-input" id="clientCountries" name="clientCountries" placeholder="e.g., US 50%, UK 30%, EU 20%">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="orgChart">Link to Org Chart <span class="optional">(optional)</span></label>
+                        <input type="url" class="form-input" id="orgChart" name="orgChart" placeholder="https://...">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Goals -->
+            <section class="form-section" id="goals">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 3</span>
+                        <h2 class="section-title">Goals</h2>
+                        <p class="section-description">What are you working towards?</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="successDefinition">How would you define success for this partnership?</label>
+                        <textarea class="form-textarea large" id="successDefinition" name="successDefinition" placeholder="What does a successful engagement look like to you?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="initiatives">What big Initiatives are you working on this year?</label>
+                        <textarea class="form-textarea large" id="initiatives" name="initiatives" placeholder="List your major initiatives and projects..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="oneYearGoal">What is your 1 Year Goal?</label>
+                        <textarea class="form-textarea" id="oneYearGoal" name="oneYearGoal" placeholder="Where do you want to be in one year?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="threeToFiveYearGoal">What is your 3-5 Year Goal?</label>
+                        <textarea class="form-textarea" id="threeToFiveYearGoal" name="threeToFiveYearGoal" placeholder="What's your longer-term vision?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="biggestChallenges">What are your 1-3 biggest Challenges?</label>
+                        <textarea class="form-textarea large" id="biggestChallenges" name="biggestChallenges" placeholder="Describe your top challenges..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="fulfillmentTime">What % of your time is spent in Fulfillment / Ops?</label>
+                        <input type="text" class="form-input" id="fulfillmentTime" name="fulfillmentTime" placeholder="e.g., Founder A: 25%, Founder B: 70%">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="additionalProblems">Additional problems/thoughts <span class="optional">(optional)</span></label>
+                        <textarea class="form-textarea large" id="additionalProblems" name="additionalProblems" placeholder="Any additional context, challenges, or thoughts you'd like to share..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Lead Generation -->
+            <section class="form-section" id="leadgen">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 4</span>
+                        <h2 class="section-title">Lead Generation</h2>
+                        <p class="section-description">How do you generate new business?</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="leadGenMethods">What are your main Lead Gen methods?</label>
+                        <textarea class="form-textarea" id="leadGenMethods" name="leadGenMethods" placeholder="e.g., Meta Ads, LinkedIn, Cold Email, Referrals, Content..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="leadGenPercentages">Leads from each (%)</label>
+                        <input type="text" class="form-input" id="leadGenPercentages" name="leadGenPercentages" placeholder="e.g., 60% Ads, 30% Referrals, 10% Content">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="leadGenCRM">What is your Lead Gen CRM?</label>
+                        <input type="text" class="form-input" id="leadGenCRM" name="leadGenCRM" placeholder="e.g., HubSpot, Close.com, Pipedrive">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Lead Nurture -->
+            <section class="form-section" id="leadnurture">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 5</span>
+                        <h2 class="section-title">Lead Nurture</h2>
+                        <p class="section-description">How do you nurture leads that aren't ready to buy?</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="leadNurtureProcess">What is your Lead Nurture Process?</label>
+                        <textarea class="form-textarea large" id="leadNurtureProcess" name="leadNurtureProcess" placeholder="Describe how you nurture leads over time..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="leadNurtureCRM">What is your Lead Nurture CRM?</label>
+                        <input type="text" class="form-input" id="leadNurtureCRM" name="leadNurtureCRM" placeholder="e.g., ActiveCampaign, Mailchimp, ConvertKit">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6: Sales -->
+            <section class="form-section" id="sales">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 6</span>
+                        <h2 class="section-title">Sales</h2>
+                        <p class="section-description">Your sales process and team.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="salesProcess">What is your Sales Process?</label>
+                        <p class="form-hint">Walk us through from lead to closed deal</p>
+                        <textarea class="form-textarea large" id="salesProcess" name="salesProcess" placeholder="1. Lead sees ad or content&#10;2. Books discovery call&#10;3. Qualification call&#10;4. Proposal sent&#10;5. Follow-up until yes/no"></textarea>
+                    </div>
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label class="form-label" for="salesTeamSize">How large is your Sales Team?</label>
+                            <input type="text" class="form-input" id="salesTeamSize" name="salesTeamSize" placeholder="e.g., 1 (founder only), 3 people">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="salesCRM">What is your Sales CRM?</label>
+                            <input type="text" class="form-input" id="salesCRM" name="salesCRM" placeholder="e.g., HubSpot, Close.com, Pipedrive">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Recruiting / Hiring -->
+            <section class="form-section" id="recruiting">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 7</span>
+                        <h2 class="section-title">Recruiting / Hiring</h2>
+                        <p class="section-description">How do you find and onboard talent?</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="recruitingProcess">What is your Recruiting process (getting talent leads)?</label>
+                        <textarea class="form-textarea" id="recruitingProcess" name="recruitingProcess" placeholder="e.g., LinkedIn Job Ads, Indeed, Referrals, Job Boards"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="hiringProcess">What is your Hiring process (filtering candidates)?</label>
+                        <textarea class="form-textarea large" id="hiringProcess" name="hiringProcess" placeholder="Describe your hiring funnel from application to offer..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="teamOnboarding">What is your Team Member Onboarding process?</label>
+                        <textarea class="form-textarea large" id="teamOnboarding" name="teamOnboarding" placeholder="How do you onboard new team members?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="trainingProcess">What is your ongoing Training process?</label>
+                        <textarea class="form-textarea" id="trainingProcess" name="trainingProcess" placeholder="How do you train and develop team members?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="recruitingCRM">What is your Recruiting CRM?</label>
+                        <input type="text" class="form-input" id="recruitingCRM" name="recruitingCRM" placeholder="e.g., Typeform, Lever, Greenhouse, Notion">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 8: Operations -->
+            <section class="form-section" id="operations">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 8</span>
+                        <h2 class="section-title">Operations</h2>
+                        <p class="section-description">How your agency runs day-to-day.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="clientOnboarding">What is your Client Onboarding Process?</label>
+                        <textarea class="form-textarea large" id="clientOnboarding" name="clientOnboarding" placeholder="Walk us through from signed contract to first deliverable..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="clientMeetingCadence">What is your Client Meeting cadence?</label>
+                        <textarea class="form-textarea" id="clientMeetingCadence" name="clientMeetingCadence" placeholder="e.g., Weekly check-ins, Monthly strategy calls"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="clientReportingCadence">What is your Client Reporting cadence?</label>
+                        <textarea class="form-textarea" id="clientReportingCadence" name="clientReportingCadence" placeholder="How often do you report to clients and in what format?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="teamMeetingCadence">What is your Team meeting cadence?</label>
+                        <textarea class="form-textarea" id="teamMeetingCadence" name="teamMeetingCadence" placeholder="Describe your internal team meetings..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="projectManagement">What is your Project Management System?</label>
+                        <input type="text" class="form-input" id="projectManagement" name="projectManagement" placeholder="e.g., ClickUp, Asana, Monday, AirTable, Notion">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="teamCompLink">Link to list of team and their comp <span class="optional">(optional)</span></label>
+                        <input type="url" class="form-input" id="teamCompLink" name="teamCompLink" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="sopsLink">Link to any SOPs <span class="optional">(optional)</span></label>
+                        <p class="form-hint">Or list the SOPs you currently have</p>
+                        <textarea class="form-textarea" id="sopsLink" name="sopsLink" placeholder="List your SOPs or provide a link..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 9: Financials -->
+            <section class="form-section" id="financials">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 9</span>
+                        <h2 class="section-title">Financials</h2>
+                        <p class="section-description">Financial health and history.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="financialsLink">Link to last 3 years of Annual P&L / Balance Sheet</label>
+                        <p class="form-hint">We'll keep this confidential. Include any context about the data.</p>
+                        <textarea class="form-textarea large" id="financialsLink" name="financialsLink" placeholder="Paste link(s) and any relevant context about your financials..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 10: Voice of the Data -->
+            <section class="form-section" id="voiceofdata">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 10</span>
+                        <h2 class="section-title">Voice of the Data</h2>
+                        <p class="section-description">Key metrics over the past 12 months. Leave blank if you don't have the data.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Monthly Metrics</label>
+                        <p class="form-hint">Enter values for each month (Jan-Dec)</p>
+
+                        <div class="metrics-grid">
+                            <div class="metric-header">
+                                <span>Metric</span>
+                                <span>Jan</span>
+                                <span>Feb</span>
+                                <span>Mar</span>
+                                <span>Apr</span>
+                                <span>May</span>
+                                <span>Jun</span>
+                                <span>Jul</span>
+                                <span>Aug</span>
+                                <span>Sep</span>
+                                <span>Oct</span>
+                                <span>Nov</span>
+                                <span>Dec</span>
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label"># Client Referrals</span>
+                                <input type="text" class="metric-input" name="metric_referrals_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_referrals_dec" placeholder="-">
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label">New Leads (#)</span>
+                                <input type="text" class="metric-input" name="metric_leads_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_leads_dec" placeholder="-">
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label">Total Clients (#)</span>
+                                <input type="text" class="metric-input" name="metric_clients_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_clients_dec" placeholder="-">
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label">Client Churn (%)</span>
+                                <input type="text" class="metric-input" name="metric_churn_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_churn_dec" placeholder="-">
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label">Team Size (#)</span>
+                                <input type="text" class="metric-input" name="metric_employees_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_employees_dec" placeholder="-">
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label">Revenue ($)</span>
+                                <input type="text" class="metric-input" name="metric_revenue_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_revenue_dec" placeholder="-">
+                            </div>
+
+                            <div class="metric-row">
+                                <span class="metric-label">Profit Margin (%)</span>
+                                <input type="text" class="metric-input" name="metric_profit_jan" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_feb" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_mar" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_apr" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_may" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_jun" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_jul" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_aug" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_sep" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_oct" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_nov" placeholder="-">
+                                <input type="text" class="metric-input" name="metric_profit_dec" placeholder="-">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 32px;">
+                        <label class="form-label">Additional Metrics <span class="optional">(averages or current values)</span></label>
+                    </div>
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label class="form-label" for="initialCallsBooked">Calls Booked (% of Leads)</label>
+                            <input type="text" class="form-input" id="initialCallsBooked" name="initialCallsBooked" placeholder="e.g., 30%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="callsShowedUp">Show-up Rate (%)</label>
+                            <input type="text" class="form-input" id="callsShowedUp" name="callsShowedUp" placeholder="e.g., 80%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="qualifiedCalls">Qualified Calls (%)</label>
+                            <input type="text" class="form-input" id="qualifiedCalls" name="qualifiedCalls" placeholder="e.g., 75%">
+                        </div>
+                    </div>
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label class="form-label" for="salesCloseRate">Close Rate (%)</label>
+                            <input type="text" class="form-input" id="salesCloseRate" name="salesCloseRate" placeholder="e.g., 30%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="newCustomerAOV">New Customer AOV ($)</label>
+                            <input type="text" class="form-input" id="newCustomerAOV" name="newCustomerAOV" placeholder="e.g., $2,500">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="totalClientCapacity">Client Capacity (#)</label>
+                            <input type="text" class="form-input" id="totalClientCapacity" name="totalClientCapacity" placeholder="e.g., 20">
+                        </div>
+                    </div>
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label class="form-label" for="fulfillmentLeadTime">Lead Time (Days)</label>
+                            <input type="text" class="form-input" id="fulfillmentLeadTime" name="fulfillmentLeadTime" placeholder="e.g., 24">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="deliveredOnTime">On Time (%)</label>
+                            <input type="text" class="form-input" id="deliveredOnTime" name="deliveredOnTime" placeholder="e.g., 90%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="fulfillmentErrors">Errors (%)</label>
+                            <input type="text" class="form-input" id="fulfillmentErrors" name="fulfillmentErrors" placeholder="e.g., 1%">
+                        </div>
+                    </div>
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label class="form-label" for="reworkRate">Rework Rate (%)</label>
+                            <input type="text" class="form-input" id="reworkRate" name="reworkRate" placeholder="e.g., 10%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="clientsUpsold">Clients Upsold (#)</label>
+                            <input type="text" class="form-input" id="clientsUpsold" name="clientsUpsold" placeholder="e.g., 2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="employeeChurn">Team Churn (%)</label>
+                            <input type="text" class="form-input" id="employeeChurn" name="employeeChurn" placeholder="e.g., 5%">
+                        </div>
+                    </div>
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label class="form-label" for="revenuePerEmployee">Revenue/Employee ($)</label>
+                            <input type="text" class="form-input" id="revenuePerEmployee" name="revenuePerEmployee" placeholder="e.g., $57,143">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="grossMargins">Gross Margins (%)</label>
+                            <input type="text" class="form-input" id="grossMargins" name="grossMargins" placeholder="e.g., 60%">
+                        </div>
+                    </div>
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label class="form-label" for="netCashflow">Net Cashflow ($)</label>
+                            <input type="text" class="form-input" id="netCashflow" name="netCashflow" placeholder="e.g., $200,000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="arCollected">AR Collected (%)</label>
+                            <input type="text" class="form-input" id="arCollected" name="arCollected" placeholder="e.g., 90%">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 11: Action Plan -->
+            <section class="form-section" id="actionplan">
+                <div class="form-card">
+                    <div class="section-header">
+                        <span class="section-badge">Section 11</span>
+                        <h2 class="section-title">Challenges & Action Plan</h2>
+                        <p class="section-description">We'll fill this in together during our audit review call.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="identifiedChallenges">Identified Challenges <span class="optional">(leave blank - we'll fill together)</span></label>
+                        <textarea class="form-textarea large" id="identifiedChallenges" name="identifiedChallenges" placeholder="This section will be completed during our review call..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="actionPlan">Action Plan <span class="optional">(leave blank - we'll fill together)</span></label>
+                        <textarea class="form-textarea large" id="actionPlan" name="actionPlan" placeholder="This section will be completed during our review call..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <div class="submit-card">
+                    <h3 class="submit-title">Ready to Submit?</h3>
+                    <p class="submit-description">Make sure you've filled out as much as you can. Don't worry if some fields are blank - we'll work through them together.</p>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        Submit Audit
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                    <div class="status-message" id="statusMessage"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Auto-save indicator -->
+    <div class="autosave-indicator" id="autosaveIndicator">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Progress saved</span>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            STORAGE_KEY: 'agency_audit_form_data',
+            WEBHOOK_URL: 'https://agencyoperators123.app.n8n.cloud/webhook/audit-btb',
+            AUTOSAVE_DELAY: 1000
+        };
+
+        // DOM Elements
+        const form = document.getElementById('auditForm');
+        const progressPercent = document.getElementById('progressPercent');
+        const sidebarProgressFill = document.getElementById('sidebarProgressFill');
+        const sidebarProgressPercent = document.getElementById('sidebarProgressPercent');
+        const mobileProgressPercent = document.getElementById('mobileProgressPercent');
+        const autosaveIndicator = document.getElementById('autosaveIndicator');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clear localStorage on fresh page load (new visitor)
+            localStorage.removeItem(CONFIG.STORAGE_KEY);
+
+            updateProgress();
+            setupAutoSave();
+            setupScrollSpy();
+            setupMobileMenu();
+            setupSidebarNavigation();
+        });
+
+        // Form Data Management (no longer loads on init - form starts fresh)
+        function loadFormData() {
+            // This function is kept for potential future use but not called on init
+            const savedData = localStorage.getItem(CONFIG.STORAGE_KEY);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    Object.keys(data).forEach(key => {
+                        const element = form.elements[key];
+                        if (element) {
+                            element.value = data[key];
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+        }
+
+        function saveFormData() {
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(data));
+            showAutosaveIndicator();
+        }
+
+        function getFormDataAsJSON() {
+            const formData = new FormData(form);
+            const data = {
+                submitted_at: new Date().toISOString(),
+                contact: {},
+                strategy: {},
+                goals: {},
+                lead_generation: {},
+                lead_nurture: {},
+                sales: {},
+                recruiting: {},
+                operations: {},
+                financials: {},
+                voice_of_data: {
+                    monthly_metrics: {},
+                    averages: {}
+                },
+                action_plan: {}
+            };
+
+            // Map form fields to structured data
+            const fieldMappings = {
+                contact: ['yourName', 'yourEmail', 'yourPhone', 'companyName', 'personalAddress', 'preferredContact'],
+                strategy: ['strategy', 'mission', 'vision', 'coreValues', 'newClientOffer', 'services', 'icp', 'clientValue', 'clientCountries', 'orgChart'],
+                goals: ['successDefinition', 'initiatives', 'oneYearGoal', 'threeToFiveYearGoal', 'biggestChallenges', 'fulfillmentTime', 'additionalProblems'],
+                lead_generation: ['leadGenMethods', 'leadGenPercentages', 'leadGenCRM'],
+                lead_nurture: ['leadNurtureProcess', 'leadNurtureCRM'],
+                sales: ['salesProcess', 'salesTeamSize', 'salesCRM'],
+                recruiting: ['recruitingProcess', 'hiringProcess', 'teamOnboarding', 'trainingProcess', 'recruitingCRM'],
+                operations: ['clientOnboarding', 'clientMeetingCadence', 'clientReportingCadence', 'teamMeetingCadence', 'projectManagement', 'teamCompLink', 'sopsLink'],
+                financials: ['financialsLink'],
+                action_plan: ['identifiedChallenges', 'actionPlan']
+            };
+
+            // Populate structured data
+            Object.keys(fieldMappings).forEach(section => {
+                fieldMappings[section].forEach(field => {
+                    const value = formData.get(field);
+                    if (value) {
+                        data[section][field] = value;
+                    }
+                });
+            });
+
+            // Handle monthly metrics
+            const metrics = ['referrals', 'leads', 'clients', 'churn', 'employees', 'revenue', 'profit'];
+            const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+            metrics.forEach(metric => {
+                data.voice_of_data.monthly_metrics[metric] = {};
+                months.forEach(month => {
+                    const value = formData.get(`metric_${metric}_${month}`);
+                    if (value) {
+                        data.voice_of_data.monthly_metrics[metric][month] = value;
+                    }
+                });
+            });
+
+            // Handle average metrics
+            const averageFields = [
+                'initialCallsBooked', 'callsShowedUp', 'qualifiedCalls', 'salesCloseRate',
+                'newCustomerAOV', 'totalClientCapacity', 'fulfillmentLeadTime', 'deliveredOnTime',
+                'fulfillmentErrors', 'reworkRate', 'clientsUpsold', 'employeeChurn',
+                'revenuePerEmployee', 'grossMargins', 'netCashflow', 'arCollected'
+            ];
+
+            averageFields.forEach(field => {
+                const value = formData.get(field);
+                if (value) {
+                    data.voice_of_data.averages[field] = value;
+                }
+            });
+
+            return data;
+        }
+
+        // Auto-save
+        let autosaveTimeout;
+        function setupAutoSave() {
+            form.addEventListener('input', () => {
+                clearTimeout(autosaveTimeout);
+                autosaveTimeout = setTimeout(() => {
+                    saveFormData();
+                    updateProgress();
+                }, CONFIG.AUTOSAVE_DELAY);
+            });
+        }
+
+        function showAutosaveIndicator() {
+            autosaveIndicator.classList.add('visible');
+            setTimeout(() => {
+                autosaveIndicator.classList.remove('visible');
+            }, 2000);
+        }
+
+        // Progress Calculation
+        function updateProgress() {
+            const inputs = form.querySelectorAll('input, textarea');
+            let filled = 0;
+            let total = 0;
+
+            inputs.forEach(input => {
+                if (input.type !== 'hidden') {
+                    total++;
+                    if (input.value.trim() !== '') {
+                        filled++;
+                    }
+                }
+            });
+
+            const percentage = total > 0 ? Math.round((filled / total) * 100) : 0;
+
+            // Update all progress indicators
+            sidebarProgressFill.style.width = percentage + '%';
+            sidebarProgressPercent.textContent = percentage + '%';
+            progressPercent.textContent = percentage + '%';
+            mobileProgressPercent.textContent = percentage + '%';
+
+            // Update section completion status
+            updateSectionCompletion();
+        }
+
+        // Update section completion indicators
+        function updateSectionCompletion() {
+            const sections = ['contact', 'strategy', 'goals', 'leadgen', 'leadnurture', 'sales', 'recruiting', 'operations', 'financials', 'voiceofdata', 'actionplan'];
+
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (!section) return;
+
+                const inputs = section.querySelectorAll('input, textarea');
+                let filled = 0;
+                let total = 0;
+
+                inputs.forEach(input => {
+                    if (input.type !== 'hidden') {
+                        total++;
+                        if (input.value.trim() !== '') {
+                            filled++;
+                        }
+                    }
+                });
+
+                const navItem = document.querySelector(`.sidebar-nav-item[data-section="${sectionId}"]`);
+                if (navItem) {
+                    // Mark as completed if more than 50% filled
+                    if (total > 0 && (filled / total) >= 0.5) {
+                        navItem.classList.add('completed');
+                    } else {
+                        navItem.classList.remove('completed');
+                    }
+                }
+            });
+        }
+
+        // Scroll Spy - highlight current section in sidebar
+        function setupScrollSpy() {
+            const sections = document.querySelectorAll('.form-section');
+            const navItems = document.querySelectorAll('.sidebar-nav-item');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-20% 0px -70% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        navItems.forEach(item => {
+                            item.classList.remove('active');
+                            if (item.getAttribute('data-section') === sectionId) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        // Mobile Menu
+        function setupMobileMenu() {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('open');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('open');
+            });
+        }
+
+        // Sidebar Navigation Click Handlers
+        function setupSidebarNavigation() {
+            const navItems = document.querySelectorAll('.sidebar-nav-item');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                        // Close mobile menu if open
+                        sidebar.classList.remove('open');
+                        sidebarOverlay.classList.remove('open');
+                    }
+                });
+            });
+        }
+
+        // Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            statusMessage.className = 'status-message';
+            statusMessage.style.display = 'none';
+
+            try {
+                const data = getFormDataAsJSON();
+
+                const response = await fetch(CONFIG.WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showStatus('success', 'Audit submitted successfully! We\'ll review your information and be in touch soon.');
+                } else {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showStatus('error', `Failed to submit audit. Please try again or contact support.`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        function showStatus(type, message) {
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.textContent = message;
+            statusMessage.style.display = 'block';
+            statusMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>
