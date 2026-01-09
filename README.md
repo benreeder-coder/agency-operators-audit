@@ -103,14 +103,14 @@ All fields are included in the payload, even if empty (shown as `null`):
   },
   "financials": {},
   "voice_of_data": {
-    "monthly_metrics": {
-      "referrals": { "jan": null, "feb": null, "mar": null, ... },
-      "leads": { "jan": null, "feb": null, ... },
-      "clients": { ... },
-      "churn": { ... },
-      "employees": { ... },
-      "revenue": { ... },
-      "profit": { ... }
+    "monthly_averages": {
+      "avgReferrals": "5",
+      "avgLeads": "50",
+      "avgClients": "25",
+      "avgChurn": "5%",
+      "avgTeamSize": "10",
+      "avgRevenue": "$50,000",
+      "avgProfit": "20%"
     },
     "averages": {
       "initialCallsBooked": "...",

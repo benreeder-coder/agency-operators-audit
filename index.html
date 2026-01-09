@@ -1346,137 +1346,39 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Monthly Metrics</label>
-                        <p class="form-hint">Enter values for each month (Jan-Dec)</p>
-
-                        <div class="metrics-grid">
-                            <div class="metric-header">
-                                <span>Metric</span>
-                                <span>Jan</span>
-                                <span>Feb</span>
-                                <span>Mar</span>
-                                <span>Apr</span>
-                                <span>May</span>
-                                <span>Jun</span>
-                                <span>Jul</span>
-                                <span>Aug</span>
-                                <span>Sep</span>
-                                <span>Oct</span>
-                                <span>Nov</span>
-                                <span>Dec</span>
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label"># Client Referrals</span>
-                                <input type="text" class="metric-input" name="metric_referrals_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_referrals_dec" placeholder="-">
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label">New Leads (#)</span>
-                                <input type="text" class="metric-input" name="metric_leads_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_leads_dec" placeholder="-">
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label">Total Clients (#)</span>
-                                <input type="text" class="metric-input" name="metric_clients_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_clients_dec" placeholder="-">
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label">Client Churn (%)</span>
-                                <input type="text" class="metric-input" name="metric_churn_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_churn_dec" placeholder="-">
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label">Team Size (#)</span>
-                                <input type="text" class="metric-input" name="metric_employees_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_employees_dec" placeholder="-">
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label">Revenue ($)</span>
-                                <input type="text" class="metric-input" name="metric_revenue_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_revenue_dec" placeholder="-">
-                            </div>
-
-                            <div class="metric-row">
-                                <span class="metric-label">Profit Margin (%)</span>
-                                <input type="text" class="metric-input" name="metric_profit_jan" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_feb" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_mar" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_apr" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_may" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_jun" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_jul" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_aug" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_sep" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_oct" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_nov" placeholder="-">
-                                <input type="text" class="metric-input" name="metric_profit_dec" placeholder="-">
-                            </div>
+                        <label class="form-label">12-Month Averages</label>
+                        <p class="form-hint">Enter your average monthly values over the past 12 months</p>
+                    </div>
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label class="form-label" for="avgReferrals">Avg Monthly Referrals</label>
+                            <input type="text" class="form-input" id="avgReferrals" name="avgReferrals" placeholder="e.g., 5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="avgLeads">Avg Monthly Leads</label>
+                            <input type="text" class="form-input" id="avgLeads" name="avgLeads" placeholder="e.g., 50">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="avgClients">Avg Total Clients</label>
+                            <input type="text" class="form-input" id="avgClients" name="avgClients" placeholder="e.g., 25">
+                        </div>
+                    </div>
+                    <div class="form-row four-col">
+                        <div class="form-group">
+                            <label class="form-label" for="avgChurn">Avg Monthly Churn (%)</label>
+                            <input type="text" class="form-input" id="avgChurn" name="avgChurn" placeholder="e.g., 5%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="avgTeamSize">Avg Team Size</label>
+                            <input type="text" class="form-input" id="avgTeamSize" name="avgTeamSize" placeholder="e.g., 10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="avgRevenue">Avg Monthly Revenue ($)</label>
+                            <input type="text" class="form-input" id="avgRevenue" name="avgRevenue" placeholder="e.g., $50,000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="avgProfit">Avg Profit Margin (%)</label>
+                            <input type="text" class="form-input" id="avgProfit" name="avgProfit" placeholder="e.g., 20%">
                         </div>
                     </div>
 
@@ -1806,7 +1708,7 @@
                 operations: {},
                 financials: {},
                 voice_of_data: {
-                    monthly_metrics: {},
+                    monthly_averages: {},
                     averages: {}
                 },
                 action_plan: {}
@@ -1834,16 +1736,11 @@
                 });
             });
 
-            // Handle monthly metrics
-            const metrics = ['referrals', 'leads', 'clients', 'churn', 'employees', 'revenue', 'profit'];
-            const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
-
-            metrics.forEach(metric => {
-                data.voice_of_data.monthly_metrics[metric] = {};
-                months.forEach(month => {
-                    const value = formData.get(`metric_${metric}_${month}`);
-                    data.voice_of_data.monthly_metrics[metric][month] = value || null;
-                });
+            // Handle 12-month averages
+            const monthlyAvgFields = ['avgReferrals', 'avgLeads', 'avgClients', 'avgChurn', 'avgTeamSize', 'avgRevenue', 'avgProfit'];
+            monthlyAvgFields.forEach(field => {
+                const value = formData.get(field);
+                data.voice_of_data.monthly_averages[field] = value || null;
             });
 
             // Handle average metrics

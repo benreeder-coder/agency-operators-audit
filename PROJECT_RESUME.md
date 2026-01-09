@@ -35,7 +35,7 @@ This document captures the development context for the Agency Operators Audit Fo
 - **Form resets on each visit** - localStorage cleared on page load so each visitor starts fresh
 - **Centered main content** - form content centered in remaining space after sidebar
 
-### Revision 4 (Current)
+### Revision 4
 - **Webhook sends ALL fields** - including null/empty values (previously skipped empty fields)
 - **File uploads** - converted 4 link fields to drag-and-drop file upload boxes:
   - `orgChart` (Strategy section)
@@ -43,6 +43,16 @@ This document captures the development context for the Agency Operators Audit Fo
   - `sopsFile` (Operations section)
   - `financialsFile` (Financials section)
 - Files converted to base64 and included in JSON payload
+
+### Revision 5 (Current)
+- **Simplified Voice of Data** - replaced 84-field monthly metrics table (7 metrics x 12 months) with 7 simple 12-month average input fields:
+  - Avg Monthly Referrals
+  - Avg Monthly Leads
+  - Avg Total Clients
+  - Avg Monthly Churn (%)
+  - Avg Team Size
+  - Avg Monthly Revenue ($)
+  - Avg Profit Margin (%)
 
 ## Technical Architecture
 
@@ -102,7 +112,7 @@ The webhook receives a JSON object with these top-level keys:
 - `recruiting` - 5 fields
 - `operations` - 5 fields
 - `financials` - empty object (file is in `files`)
-- `voice_of_data.monthly_metrics` - 7 metrics x 12 months
+- `voice_of_data.monthly_averages` - 7 fields (12-month averages)
 - `voice_of_data.averages` - 16 business metrics
 - `action_plan` - 2 fields
 - `files` - 4 file objects (orgChart, teamComp, sops, financials)
