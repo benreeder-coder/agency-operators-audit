@@ -2,51 +2,56 @@
 
 A modern, single-page web form for collecting comprehensive agency audit data. Built with vanilla HTML/CSS/JS for easy deployment.
 
+## Live URLs
+
+- **Production**: https://audit-frontend-ten.vercel.app
+- **GitHub**: https://github.com/benreeder-coder/agency-operators-audit
+
 ## Features
 
 - **Single Page Design**: All 11 sections on one scrollable page for easy reference
-- **Auto-Save**: Form progress saved to localStorage automatically
-- **Progress Tracking**: Visual "Level Up" progress bar shows completion percentage
-- **Section Navigation**: Sticky sidebar with scroll-spy highlighting
-- **Mobile Responsive**: Works on desktop, tablet, and mobile
-- **n8n Integration**: Sends structured JSON to your n8n webhook on submission
+- **Sidebar Navigation**: Sticky left sidebar with section links and scroll-spy highlighting
+- **Progress Tracking**: Visual progress bar shows completion percentage as you fill out the form
+- **File Uploads**: Drag-and-drop file upload boxes for documents (org chart, financials, SOPs, team comp)
+- **Auto-Save**: Form progress saved to localStorage during session (resets on new visit)
+- **Mobile Responsive**: Collapses sidebar to hamburger menu on mobile
+- **n8n Integration**: Sends structured JSON (including base64 files) to webhook on submission
 
-## Quick Start
+## Form Sections
 
-1. **Host the files**: Upload the `audit_frontend` folder to any web server or hosting service
-2. **Configure webhook**: Enter your n8n webhook URL in the configuration banner at the top of the form
-3. **Share the link**: Send the form URL to your clients
+1. **Contact Info** - Name, email, phone, company, address, preferred contact
+2. **Strategy** - Mission, vision, values, pricing, services, ICP, client value, org chart (file upload)
+3. **Goals** - Success definition, initiatives, 1-year goal, 3-5 year goal, challenges
+4. **Lead Generation** - Methods, percentages, CRM
+5. **Lead Nurture** - Process, CRM
+6. **Sales** - Process, team size, CRM
+7. **Recruiting/Hiring** - Process, onboarding, training, CRM
+8. **Operations** - Client onboarding, meeting cadence, reporting, team comp (file), SOPs (file)
+9. **Financials** - P&L / Balance Sheet (file upload)
+10. **Voice of Data** - Monthly metrics table + business averages
+11. **Challenges & Action Plan** - Summary areas
 
-## n8n Webhook Setup
+## n8n Webhook Integration
 
-### Option 1: Configure via URL Parameter
-
-Add your webhook URL as a query parameter:
+The form POSTs JSON data to the hardcoded webhook URL:
 ```
-https://your-domain.com/audit_frontend/?webhook=https://your-n8n.com/webhook/abc123
+https://agencyoperators123.app.n8n.cloud/webhook/audit-btb
 ```
 
-### Option 2: Configure in the Form
+### Payload Structure
 
-Clients can enter the webhook URL in the configuration banner at the top of the form.
-
-### n8n Workflow Setup
-
-1. Create a new workflow in n8n
-2. Add a **Webhook** node as the trigger
-3. Configure it to accept POST requests
-4. The form will send JSON data structured like this:
+All fields are included in the payload, even if empty (shown as `null`):
 
 ```json
 {
   "submitted_at": "2024-01-09T12:00:00.000Z",
   "contact": {
-    "yourName": "...",
-    "yourEmail": "...",
-    "yourPhone": "...",
-    "companyName": "...",
-    "personalAddress": "...",
-    "preferredContact": "..."
+    "yourName": "John Doe",
+    "yourEmail": "john@example.com",
+    "yourPhone": "555-1234",
+    "companyName": "Acme Agency",
+    "personalAddress": "123 Main St",
+    "preferredContact": "email"
   },
   "strategy": {
     "strategy": "...",
@@ -57,8 +62,7 @@ Clients can enter the webhook URL in the configuration banner at the top of the 
     "services": "...",
     "icp": "...",
     "clientValue": "...",
-    "clientCountries": "...",
-    "orgChart": "..."
+    "clientCountries": "..."
   },
   "goals": {
     "successDefinition": "...",
@@ -95,22 +99,18 @@ Clients can enter the webhook URL in the configuration banner at the top of the 
     "clientMeetingCadence": "...",
     "clientReportingCadence": "...",
     "teamMeetingCadence": "...",
-    "projectManagement": "...",
-    "teamCompLink": "...",
-    "sopsLink": "..."
+    "projectManagement": "..."
   },
-  "financials": {
-    "financialsLink": "..."
-  },
+  "financials": {},
   "voice_of_data": {
     "monthly_metrics": {
-      "referrals": { "jan": "...", "feb": "...", ... },
-      "leads": { "jan": "...", "feb": "...", ... },
-      "clients": { "jan": "...", "feb": "...", ... },
-      "churn": { "jan": "...", "feb": "...", ... },
-      "employees": { "jan": "...", "feb": "...", ... },
-      "revenue": { "jan": "...", "feb": "...", ... },
-      "profit": { "jan": "...", "feb": "...", ... }
+      "referrals": { "jan": null, "feb": null, "mar": null, ... },
+      "leads": { "jan": null, "feb": null, ... },
+      "clients": { ... },
+      "churn": { ... },
+      "employees": { ... },
+      "revenue": { ... },
+      "profit": { ... }
     },
     "averages": {
       "initialCallsBooked": "...",
@@ -134,23 +134,55 @@ Clients can enter the webhook URL in the configuration banner at the top of the 
   "action_plan": {
     "identifiedChallenges": "...",
     "actionPlan": "..."
+  },
+  "files": {
+    "orgChart": {
+      "filename": "org-chart.pdf",
+      "type": "application/pdf",
+      "size": 245678,
+      "data": "data:application/pdf;base64,JVBERi0xLj..."
+    },
+    "teamComp": null,
+    "sops": {
+      "filename": "sops.docx",
+      "type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "size": 123456,
+      "data": "data:application/vnd.openxmlformats...;base64,..."
+    },
+    "financials": {
+      "filename": "financials-2024.xlsx",
+      "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 567890,
+      "data": "data:application/vnd.openxmlformats...;base64,..."
+    }
   }
 }
 ```
 
-## Deployment Options
+### File Upload Details
 
-### Option 1: Static Hosting (Recommended)
-- Vercel
-- Netlify
-- GitHub Pages
-- AWS S3 + CloudFront
+- **Max file size**: 10MB per file
+- **Accepted formats**: PDF, PNG, JPG, Excel (.xlsx, .xls), Word (.doc, .docx), CSV, TXT
+- **Encoding**: Files are converted to base64 data URIs
+- **Fields**: orgChart, teamComp, sops, financials
 
-### Option 2: Web Server
-Upload to any web server (Apache, Nginx, etc.)
+## Tech Stack
 
-### Option 3: Local Testing
-Open `index.html` directly in a browser (webhook submission requires CORS to be handled)
+- **Frontend**: Vanilla HTML/CSS/JS (no build step)
+- **Fonts**: Plus Jakarta Sans (headings), DM Sans (body) via Google Fonts
+- **Hosting**: Vercel (auto-deploys from GitHub)
+- **Backend**: n8n webhook
+
+## File Structure
+
+```
+audit_frontend/
+├── index.html          # Main form (single file with embedded CSS/JS)
+├── assets/
+│   └── logo.jpg        # Agency Operators logo
+├── README.md           # This file
+└── PROJECT_RESUME.md   # Development context for future sessions
+```
 
 ## Customization
 
@@ -158,11 +190,11 @@ Open `index.html` directly in a browser (webhook submission requires CORS to be 
 Edit the CSS variables at the top of the `<style>` section:
 ```css
 :root {
-    --bg-dark: #0a0a0f;
+    --bg-page: #f8fafc;
+    --bg-white: #ffffff;
     --accent-blue: #3b82f6;
     --accent-cyan: #06b6d4;
-    --accent-yellow: #fbbf24;
-    --accent-pink: #ec4899;
+    --accent-green: #10b981;
     /* ... */
 }
 ```
@@ -170,27 +202,27 @@ Edit the CSS variables at the top of the `<style>` section:
 ### Changing Logo
 Replace `assets/logo.jpg` with your own logo file.
 
-### Adding/Removing Fields
-Edit the HTML form sections. Each section follows this pattern:
-```html
-<section class="form-section" id="sectionId">
-    <div class="section-header">...</div>
-    <div class="form-card">
-        <div class="form-group">
-            <label class="form-label" for="fieldName">Field Label</label>
-            <input type="text" class="form-input" id="fieldName" name="fieldName">
-        </div>
-    </div>
-</section>
+### Changing Webhook URL
+Edit the CONFIG object in the `<script>` section:
+```javascript
+const CONFIG = {
+    STORAGE_KEY: 'agency_audit_form_data',
+    WEBHOOK_URL: 'https://your-webhook-url.com/webhook/endpoint',
+    AUTOSAVE_DELAY: 1000
+};
 ```
 
 ## Browser Support
+
 - Chrome (latest)
 - Firefox (latest)
 - Safari (latest)
 - Edge (latest)
 
 ## Data Privacy
-- Form data is stored in the browser's localStorage until submitted
+
+- Form data is stored in browser localStorage during session only
+- localStorage is cleared on each new page visit (fresh form)
 - Data is only sent to the configured n8n webhook URL
 - No third-party tracking or analytics included
+- Files are sent as base64 (not stored externally)
