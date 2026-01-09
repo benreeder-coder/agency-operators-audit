@@ -390,6 +390,125 @@
             min-height: 160px;
         }
 
+        /* File Upload Styling */
+        .file-upload-wrapper {
+            position: relative;
+        }
+
+        .file-upload-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .file-upload-zone:hover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.04);
+        }
+
+        .file-upload-zone.dragover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .file-upload-zone.has-file {
+            border-style: solid;
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.04);
+        }
+
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .file-upload-zone.has-file .file-upload-icon {
+            color: var(--accent-green);
+        }
+
+        .file-upload-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .file-upload-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .file-upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .file-preview-icon {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-blue);
+            flex-shrink: 0;
+        }
+
+        .file-preview-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-preview-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-preview-size {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .file-remove-btn {
+            padding: 6px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .file-remove-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
         /* Grid layouts */
         .form-row {
             display: grid;
@@ -925,8 +1044,31 @@
                         <input type="text" class="form-input" id="clientCountries" name="clientCountries" placeholder="e.g., US 50%, UK 30%, EU 20%">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="orgChart">Link to Org Chart <span class="optional">(optional)</span></label>
-                        <input type="url" class="form-input" id="orgChart" name="orgChart" placeholder="https://...">
+                        <label class="form-label">Org Chart <span class="optional">(optional)</span></label>
+                        <div class="file-upload-wrapper" data-field="orgChartFile">
+                            <div class="file-upload-zone" id="orgChartZone">
+                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="file-upload-text">Click to upload or drag and drop</span>
+                                <span class="file-upload-hint">PDF, PNG, JPG, or Excel (max 10MB)</span>
+                                <input type="file" class="file-upload-input" id="orgChartFile" name="orgChartFile" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.csv">
+                            </div>
+                            <div class="file-preview" id="orgChartPreview" style="display: none;">
+                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <div class="file-preview-info">
+                                    <div class="file-preview-name" id="orgChartFileName"></div>
+                                    <div class="file-preview-size" id="orgChartFileSize"></div>
+                                </div>
+                                <button type="button" class="file-remove-btn" data-target="orgChartFile">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1098,13 +1240,59 @@
                         <input type="text" class="form-input" id="projectManagement" name="projectManagement" placeholder="e.g., ClickUp, Asana, Monday, AirTable, Notion">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="teamCompLink">Link to list of team and their comp <span class="optional">(optional)</span></label>
-                        <input type="url" class="form-input" id="teamCompLink" name="teamCompLink" placeholder="https://...">
+                        <label class="form-label">Team & Compensation List <span class="optional">(optional)</span></label>
+                        <div class="file-upload-wrapper" data-field="teamCompFile">
+                            <div class="file-upload-zone" id="teamCompZone">
+                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="file-upload-text">Click to upload or drag and drop</span>
+                                <span class="file-upload-hint">PDF, Excel, or CSV (max 10MB)</span>
+                                <input type="file" class="file-upload-input" id="teamCompFile" name="teamCompFile" accept=".pdf,.xlsx,.xls,.csv,.doc,.docx">
+                            </div>
+                            <div class="file-preview" id="teamCompPreview" style="display: none;">
+                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <div class="file-preview-info">
+                                    <div class="file-preview-name" id="teamCompFileName"></div>
+                                    <div class="file-preview-size" id="teamCompFileSize"></div>
+                                </div>
+                                <button type="button" class="file-remove-btn" data-target="teamCompFile">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="sopsLink">Link to any SOPs <span class="optional">(optional)</span></label>
-                        <p class="form-hint">Or list the SOPs you currently have</p>
-                        <textarea class="form-textarea" id="sopsLink" name="sopsLink" placeholder="List your SOPs or provide a link..."></textarea>
+                        <label class="form-label">SOPs Document <span class="optional">(optional)</span></label>
+                        <p class="form-hint">Upload your standard operating procedures</p>
+                        <div class="file-upload-wrapper" data-field="sopsFile">
+                            <div class="file-upload-zone" id="sopsZone">
+                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="file-upload-text">Click to upload or drag and drop</span>
+                                <span class="file-upload-hint">PDF, Word, or text files (max 10MB)</span>
+                                <input type="file" class="file-upload-input" id="sopsFile" name="sopsFile" accept=".pdf,.doc,.docx,.txt,.xlsx,.xls">
+                            </div>
+                            <div class="file-preview" id="sopsPreview" style="display: none;">
+                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <div class="file-preview-info">
+                                    <div class="file-preview-name" id="sopsFileName"></div>
+                                    <div class="file-preview-size" id="sopsFileSize"></div>
+                                </div>
+                                <button type="button" class="file-remove-btn" data-target="sopsFile">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1118,9 +1306,32 @@
                         <p class="section-description">Financial health and history.</p>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="financialsLink">Link to last 3 years of Annual P&L / Balance Sheet</label>
-                        <p class="form-hint">We'll keep this confidential. Include any context about the data.</p>
-                        <textarea class="form-textarea large" id="financialsLink" name="financialsLink" placeholder="Paste link(s) and any relevant context about your financials..."></textarea>
+                        <label class="form-label">Last 3 Years of Annual P&L / Balance Sheet</label>
+                        <p class="form-hint">We'll keep this confidential. Upload your financial documents.</p>
+                        <div class="file-upload-wrapper" data-field="financialsFile">
+                            <div class="file-upload-zone" id="financialsZone">
+                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="file-upload-text">Click to upload or drag and drop</span>
+                                <span class="file-upload-hint">PDF, Excel, or CSV (max 10MB)</span>
+                                <input type="file" class="file-upload-input" id="financialsFile" name="financialsFile" accept=".pdf,.xlsx,.xls,.csv,.doc,.docx">
+                            </div>
+                            <div class="file-preview" id="financialsPreview" style="display: none;">
+                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <div class="file-preview-info">
+                                    <div class="file-preview-name" id="financialsFileName"></div>
+                                    <div class="file-preview-size" id="financialsFileSize"></div>
+                                </div>
+                                <button type="button" class="file-remove-btn" data-target="financialsFile">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1416,6 +1627,18 @@
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 
+        // File upload storage
+        const uploadedFiles = {
+            orgChartFile: null,
+            teamCompFile: null,
+            sopsFile: null,
+            financialsFile: null
+        };
+
+        // File upload configuration
+        const fileFields = ['orgChartFile', 'teamCompFile', 'sopsFile', 'financialsFile'];
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Clear localStorage on fresh page load (new visitor)
@@ -1426,6 +1649,7 @@
             setupScrollSpy();
             setupMobileMenu();
             setupSidebarNavigation();
+            setupFileUploads();
         });
 
         // Form Data Management (no longer loads on init - form starts fresh)
@@ -1457,6 +1681,117 @@
             showAutosaveIndicator();
         }
 
+        // File Upload Functions
+        function setupFileUploads() {
+            fileFields.forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                const zone = document.getElementById(fieldId.replace('File', 'Zone'));
+                const preview = document.getElementById(fieldId.replace('File', 'Preview'));
+
+                if (!input || !zone) return;
+
+                // Click to upload
+                zone.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('file-remove-btn') || e.target.closest('.file-remove-btn')) {
+                        return;
+                    }
+                    input.click();
+                });
+
+                // File selection
+                input.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileSelect(fieldId, e.target.files[0]);
+                    }
+                });
+
+                // Drag and drop
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('dragover');
+                });
+
+                zone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                    if (e.dataTransfer.files.length > 0) {
+                        handleFileSelect(fieldId, e.dataTransfer.files[0]);
+                    }
+                });
+            });
+
+            // Remove buttons
+            document.querySelectorAll('.file-remove-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const targetId = btn.dataset.target;
+                    removeFile(targetId);
+                });
+            });
+        }
+
+        function handleFileSelect(fieldId, file) {
+            // Validate file size
+            if (file.size > MAX_FILE_SIZE) {
+                alert('File is too large. Maximum size is 10MB.');
+                return;
+            }
+
+            const zone = document.getElementById(fieldId.replace('File', 'Zone'));
+            const preview = document.getElementById(fieldId.replace('File', 'Preview'));
+            const nameEl = document.getElementById(fieldId.replace('File', 'FileName'));
+            const sizeEl = document.getElementById(fieldId.replace('File', 'FileSize'));
+
+            // Convert to base64
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedFiles[fieldId] = {
+                    filename: file.name,
+                    type: file.type,
+                    size: file.size,
+                    data: e.target.result
+                };
+
+                // Update UI
+                zone.classList.add('has-file');
+                if (preview && nameEl && sizeEl) {
+                    nameEl.textContent = file.name;
+                    sizeEl.textContent = formatFileSize(file.size);
+                    preview.style.display = 'flex';
+                }
+
+                updateProgress();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeFile(fieldId) {
+            uploadedFiles[fieldId] = null;
+
+            const input = document.getElementById(fieldId);
+            const zone = document.getElementById(fieldId.replace('File', 'Zone'));
+            const preview = document.getElementById(fieldId.replace('File', 'Preview'));
+
+            if (input) input.value = '';
+            if (zone) zone.classList.remove('has-file');
+            if (preview) preview.style.display = 'none';
+
+            updateProgress();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
         function getFormDataAsJSON() {
             const formData = new FormData(form);
             const data = {
@@ -1480,24 +1815,22 @@
             // Map form fields to structured data
             const fieldMappings = {
                 contact: ['yourName', 'yourEmail', 'yourPhone', 'companyName', 'personalAddress', 'preferredContact'],
-                strategy: ['strategy', 'mission', 'vision', 'coreValues', 'newClientOffer', 'services', 'icp', 'clientValue', 'clientCountries', 'orgChart'],
+                strategy: ['strategy', 'mission', 'vision', 'coreValues', 'newClientOffer', 'services', 'icp', 'clientValue', 'clientCountries'],
                 goals: ['successDefinition', 'initiatives', 'oneYearGoal', 'threeToFiveYearGoal', 'biggestChallenges', 'fulfillmentTime', 'additionalProblems'],
                 lead_generation: ['leadGenMethods', 'leadGenPercentages', 'leadGenCRM'],
                 lead_nurture: ['leadNurtureProcess', 'leadNurtureCRM'],
                 sales: ['salesProcess', 'salesTeamSize', 'salesCRM'],
                 recruiting: ['recruitingProcess', 'hiringProcess', 'teamOnboarding', 'trainingProcess', 'recruitingCRM'],
-                operations: ['clientOnboarding', 'clientMeetingCadence', 'clientReportingCadence', 'teamMeetingCadence', 'projectManagement', 'teamCompLink', 'sopsLink'],
-                financials: ['financialsLink'],
+                operations: ['clientOnboarding', 'clientMeetingCadence', 'clientReportingCadence', 'teamMeetingCadence', 'projectManagement'],
+                financials: [],
                 action_plan: ['identifiedChallenges', 'actionPlan']
             };
 
-            // Populate structured data
+            // Populate structured data (always include all fields, even if empty)
             Object.keys(fieldMappings).forEach(section => {
                 fieldMappings[section].forEach(field => {
                     const value = formData.get(field);
-                    if (value) {
-                        data[section][field] = value;
-                    }
+                    data[section][field] = value || null;
                 });
             });
 
@@ -1509,9 +1842,7 @@
                 data.voice_of_data.monthly_metrics[metric] = {};
                 months.forEach(month => {
                     const value = formData.get(`metric_${metric}_${month}`);
-                    if (value) {
-                        data.voice_of_data.monthly_metrics[metric][month] = value;
-                    }
+                    data.voice_of_data.monthly_metrics[metric][month] = value || null;
                 });
             });
 
@@ -1525,10 +1856,16 @@
 
             averageFields.forEach(field => {
                 const value = formData.get(field);
-                if (value) {
-                    data.voice_of_data.averages[field] = value;
-                }
+                data.voice_of_data.averages[field] = value || null;
             });
+
+            // Add uploaded files
+            data.files = {
+                orgChart: uploadedFiles.orgChartFile || null,
+                teamComp: uploadedFiles.teamCompFile || null,
+                sops: uploadedFiles.sopsFile || null,
+                financials: uploadedFiles.financialsFile || null
+            };
 
             return data;
         }
