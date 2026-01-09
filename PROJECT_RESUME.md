@@ -44,7 +44,7 @@ This document captures the development context for the Agency Operators Audit Fo
   - `financialsFile` (Financials section)
 - Files converted to base64 and included in JSON payload
 
-### Revision 5 (Current)
+### Revision 5
 - **Simplified Voice of Data** - replaced 84-field monthly metrics table (7 metrics x 12 months) with 7 simple 12-month average input fields:
   - Avg Monthly Referrals
   - Avg Monthly Leads
@@ -53,6 +53,12 @@ This document captures the development context for the Agency Operators Audit Fo
   - Avg Team Size
   - Avg Monthly Revenue ($)
   - Avg Profit Margin (%)
+
+### Revision 6 (Current)
+- **Form persistence across refreshes** - form data now persists in localStorage
+- Users can refresh the page or close/reopen browser and resume where they left off
+- File uploads do NOT persist (too large for localStorage), only text fields
+- Previously: form cleared on every page load (each visitor started fresh)
 
 ## Technical Architecture
 

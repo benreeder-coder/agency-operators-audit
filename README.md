@@ -13,7 +13,7 @@ A modern, single-page web form for collecting comprehensive agency audit data. B
 - **Sidebar Navigation**: Sticky left sidebar with section links and scroll-spy highlighting
 - **Progress Tracking**: Visual progress bar shows completion percentage as you fill out the form
 - **File Uploads**: Drag-and-drop file upload boxes for documents (org chart, financials, SOPs, team comp)
-- **Auto-Save**: Form progress saved to localStorage during session (resets on new visit)
+- **Auto-Save & Persistence**: Form progress saved to localStorage and persists across page refreshes
 - **Mobile Responsive**: Collapses sidebar to hamburger menu on mobile
 - **n8n Integration**: Sends structured JSON (including base64 files) to webhook on submission
 
@@ -221,8 +221,9 @@ const CONFIG = {
 
 ## Data Privacy
 
-- Form data is stored in browser localStorage during session only
-- localStorage is cleared on each new page visit (fresh form)
+- Form data is stored in browser localStorage and persists across page refreshes
+- Users can resume their form at any time (data stays until browser cache is cleared)
+- File uploads do NOT persist in localStorage (only text fields)
 - Data is only sent to the configured n8n webhook URL
 - No third-party tracking or analytics included
 - Files are sent as base64 (not stored externally)
