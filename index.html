@@ -1585,62 +1585,99 @@
 
         // File Upload Functions
         function setupFileUploads() {
+            console.log('[FileUpload] Setting up file upload handlers for fields:', fileFields);
+
             fileFields.forEach(fieldId => {
                 const input = document.getElementById(fieldId);
                 const zone = document.getElementById(fieldId.replace('File', 'Zone'));
                 const preview = document.getElementById(fieldId.replace('File', 'Preview'));
 
-                if (!input || !zone) return;
+                if (!input || !zone) {
+                    console.warn(`[FileUpload] Missing elements for ${fieldId}:`, { input: !!input, zone: !!zone });
+                    return;
+                }
 
                 // Click to upload
                 zone.addEventListener('click', (e) => {
+                    e.stopPropagation();
+
+                    // Skip if clicking on remove button
                     if (e.target.classList.contains('file-remove-btn') || e.target.closest('.file-remove-btn')) {
                         return;
                     }
+
+                    console.log(`[FileUpload] Zone clicked for ${fieldId}`);
+
+                    // Reset input value to allow re-selecting the same file
+                    input.value = '';
+
                     input.click();
                 });
 
                 // File selection
                 input.addEventListener('change', (e) => {
+                    console.log(`[FileUpload] Input change event for ${fieldId}, files:`, e.target.files.length);
+
                     if (e.target.files.length > 0) {
                         handleFileSelect(fieldId, e.target.files[0]);
+                    } else {
+                        console.log(`[FileUpload] No files selected for ${fieldId} (user cancelled)`);
                     }
                 });
 
                 // Drag and drop
                 zone.addEventListener('dragover', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     zone.classList.add('dragover');
                 });
 
                 zone.addEventListener('dragleave', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     zone.classList.remove('dragover');
                 });
 
                 zone.addEventListener('drop', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     zone.classList.remove('dragover');
+
+                    console.log(`[FileUpload] Drop event for ${fieldId}, files:`, e.dataTransfer.files.length);
+
                     if (e.dataTransfer.files.length > 0) {
                         handleFileSelect(fieldId, e.dataTransfer.files[0]);
                     }
                 });
+
+                console.log(`[FileUpload] Handlers attached for ${fieldId}`);
             });
 
             // Remove buttons
             document.querySelectorAll('.file-remove-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    e.preventDefault();
                     const targetId = btn.dataset.target;
+                    console.log(`[FileUpload] Remove button clicked for ${targetId}`);
                     removeFile(targetId);
                 });
             });
+
+            console.log('[FileUpload] All file upload handlers initialized');
         }
 
         function handleFileSelect(fieldId, file) {
+            console.log(`[FileUpload] Starting file selection for ${fieldId}:`, {
+                name: file.name,
+                type: file.type,
+                size: file.size
+            });
+
             // Validate file size
             if (file.size > MAX_FILE_SIZE) {
                 alert('File is too large. Maximum size is 10MB.');
+                console.warn(`[FileUpload] File rejected - too large: ${file.size} bytes`);
                 return;
             }
 
@@ -1651,13 +1688,23 @@
 
             // Convert to base64
             const reader = new FileReader();
+
             reader.onload = (e) => {
+                console.log(`[FileUpload] Successfully read file for ${fieldId}, data length: ${e.target.result.length}`);
+
                 uploadedFiles[fieldId] = {
                     filename: file.name,
                     type: file.type,
                     size: file.size,
                     data: e.target.result
                 };
+
+                console.log(`[FileUpload] Stored in uploadedFiles[${fieldId}]:`, {
+                    filename: uploadedFiles[fieldId].filename,
+                    type: uploadedFiles[fieldId].type,
+                    size: uploadedFiles[fieldId].size,
+                    dataPreview: uploadedFiles[fieldId].data.substring(0, 100) + '...'
+                });
 
                 // Update UI
                 zone.classList.add('has-file');
@@ -1669,6 +1716,18 @@
 
                 updateProgress();
             };
+
+            reader.onerror = (e) => {
+                console.error(`[FileUpload] FileReader error for ${fieldId}:`, e);
+                console.error(`[FileUpload] Error details:`, reader.error);
+                alert(`Failed to read file "${file.name}". Error: ${reader.error?.message || 'Unknown error'}. Please try again.`);
+            };
+
+            reader.onabort = () => {
+                console.warn(`[FileUpload] FileReader aborted for ${fieldId}: ${file.name}`);
+            };
+
+            console.log(`[FileUpload] Starting FileReader.readAsDataURL for ${fieldId}`);
             reader.readAsDataURL(file);
         }
 
@@ -1914,6 +1973,9 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            console.log('[Submit] Form submission started');
+            console.log('[Submit] Current uploadedFiles state:', uploadedFiles);
+
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
             statusMessage.className = 'status-message';
@@ -1922,21 +1984,46 @@
             try {
                 const data = getFormDataAsJSON();
 
+                // Log payload details for debugging
+                const jsonPayload = JSON.stringify(data);
+                const payloadSizeKB = (jsonPayload.length / 1024).toFixed(2);
+                const payloadSizeMB = (jsonPayload.length / (1024 * 1024)).toFixed(2);
+
+                console.log('[Submit] Payload size:', payloadSizeKB, 'KB (', payloadSizeMB, 'MB)');
+                console.log('[Submit] Files in payload:', {
+                    orgChart: data.files.orgChart ? { filename: data.files.orgChart.filename, size: data.files.orgChart.size, hasData: !!data.files.orgChart.data } : null,
+                    teamComp: data.files.teamComp ? { filename: data.files.teamComp.filename, size: data.files.teamComp.size, hasData: !!data.files.teamComp.data } : null,
+                    sops: data.files.sops ? { filename: data.files.sops.filename, size: data.files.sops.size, hasData: !!data.files.sops.data } : null,
+                    financials: data.files.financials ? { filename: data.files.financials.filename, size: data.files.financials.size, hasData: !!data.files.financials.data } : null
+                });
+
+                // Warn if payload is very large (>5MB)
+                if (jsonPayload.length > 5 * 1024 * 1024) {
+                    console.warn('[Submit] WARNING: Payload is larger than 5MB, may fail due to size limits');
+                }
+
+                console.log('[Submit] Sending to webhook:', CONFIG.WEBHOOK_URL);
+
                 const response = await fetch(CONFIG.WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
+                    body: jsonPayload
                 });
 
+                console.log('[Submit] Response status:', response.status);
+
                 if (response.ok) {
+                    console.log('[Submit] Submission successful!');
                     showStatus('success', 'Audit submitted successfully! We\'ll review your information and be in touch soon.');
                 } else {
-                    throw new Error(`Server responded with ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('[Submit] Server error response:', errorText);
+                    throw new Error(`Server responded with ${response.status}: ${errorText}`);
                 }
             } catch (error) {
-                console.error('Submission error:', error);
+                console.error('[Submit] Submission error:', error);
                 showStatus('error', `Failed to submit audit. Please try again or contact support.`);
             } finally {
                 submitBtn.disabled = false;
