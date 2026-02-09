@@ -1314,29 +1314,9 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Org Chart</label>
-                        <div class="file-upload-wrapper" data-field="orgChartFile">
-                            <div class="file-upload-zone" id="orgChartZone">
-                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                <span class="file-upload-text">Click to upload or drag and drop</span>
-                                <span class="file-upload-hint">PDF, PNG, JPG, or Excel (max 10MB)</span>
-                                <input type="file" class="file-upload-input" id="orgChartFile" name="orgChartFile" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.csv">
-                            </div>
-                            <div class="file-preview" id="orgChartPreview" style="display: none;">
-                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <div class="file-preview-info">
-                                    <div class="file-preview-name" id="orgChartFileName"></div>
-                                    <div class="file-preview-size" id="orgChartFileSize"></div>
-                                </div>
-                                <button type="button" class="file-remove-btn" data-target="orgChartFile">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </div>
+                        <p class="form-hint">Upload an org chart file or fill in the table below.</p>
+                        <div class="editable-table-section">
+                            <div id="orgChartTableContainer"></div>
                         </div>
                     </div>
                 </div>
@@ -2022,7 +2002,7 @@
         }
 
         // Table instances (initialized in DOMContentLoaded)
-        let teamMembersTable, clientRosterTable, pnlTable;
+        let teamMembersTable, clientRosterTable, pnlTable, orgChartTable;
 
         // DOM Elements
         const form = document.getElementById('auditForm');
@@ -2038,12 +2018,10 @@
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 
         // File upload storage
-        const uploadedFiles = {
-            orgChartFile: null
-        };
+        const uploadedFiles = {};
 
-        // File upload configuration (teamCompFile, sopsFile, financialsFile removed — replaced by editable tables)
-        const fileFields = ['orgChartFile'];
+        // File upload configuration (all file uploads replaced by editable tables)
+        const fileFields = [];
         const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
         // Initialize
@@ -2052,6 +2030,14 @@
             loadFormData();
 
             // Initialize editable tables
+            orgChartTable = new EditableTable('orgChartTableContainer', [
+                { key: 'name', label: 'Name', placeholder: 'e.g., Sarah Johnson' },
+                { key: 'role', label: 'Role', placeholder: 'e.g., Account Manager' },
+                { key: 'reports_to', label: 'Reports To', placeholder: 'e.g., Mike Davis (CEO)' }
+            ], 'org_chart', {
+                exampleRow: { name: 'Sarah Johnson', role: 'Account Manager', reports_to: 'Mike Davis (CEO)' }
+            });
+
             teamMembersTable = new EditableTable('teamMembersTableContainer', [
                 { key: 'team_member', label: 'Team Member', placeholder: 'e.g., James Smith' },
                 { key: 'position', label: 'Position', placeholder: 'e.g., Creative Strategist' },
@@ -2366,12 +2352,8 @@
                 }
             });
 
-            // Add uploaded files
-            data.files = {
-                orgChart: uploadedFiles.orgChartFile || null
-            };
-
             // Add editable table data
+            data.strategy.org_chart = orgChartTable ? orgChartTable.getData() : [];
             data.operations.team_members = teamMembersTable ? teamMembersTable.getData() : [];
             data.operations.client_roster = clientRosterTable ? clientRosterTable.getData() : [];
             data.financials.pnl_data = pnlTable ? pnlTable.getData() : [];
@@ -2629,10 +2611,8 @@
                 const payloadSizeMB = (jsonPayload.length / (1024 * 1024)).toFixed(2);
 
                 console.log('[Submit] Payload size:', payloadSizeKB, 'KB (', payloadSizeMB, 'MB)');
-                console.log('[Submit] Files in payload:', {
-                    orgChart: data.files.orgChart ? { filename: data.files.orgChart.filename, size: data.files.orgChart.size, hasData: !!data.files.orgChart.data } : null
-                });
                 console.log('[Submit] Tables in payload:', {
+                    org_chart: data.strategy.org_chart?.length || 0,
                     team_members: data.operations.team_members?.length || 0,
                     client_roster: data.operations.client_roster?.length || 0,
                     pnl_data: data.financials.pnl_data?.length || 0
