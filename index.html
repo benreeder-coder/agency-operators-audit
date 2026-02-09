@@ -1697,6 +1697,12 @@
             AUTOSAVE_DELAY: 1000
         };
 
+        // One-time cleanup: clear stale example data from previous versions
+        if (!localStorage.getItem('audit_table_v2_clean')) {
+            localStorage.removeItem(CONFIG.TABLE_STORAGE_KEY);
+            localStorage.setItem('audit_table_v2_clean', '1');
+        }
+
         // ─── Reusable EditableTable Class ───
         class EditableTable {
             constructor(containerId, columns, tableType, options = {}) {
