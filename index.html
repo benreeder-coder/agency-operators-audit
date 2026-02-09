@@ -509,6 +509,288 @@
             color: #ef4444;
         }
 
+        /* Editable Table Sections */
+        .editable-table-section {
+            margin-top: 8px;
+        }
+
+        .editable-table-section .section-sublabel {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .editable-table-section .section-subhint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .table-upload-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 20px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .table-upload-zone:hover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.04);
+        }
+
+        .table-upload-zone.dragover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .table-upload-zone.has-file {
+            border-style: solid;
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.04);
+        }
+
+        .table-upload-zone .upload-icon {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .table-upload-zone .upload-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .table-upload-zone .upload-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .table-upload-zone .upload-file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .table-upload-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(59, 130, 246, 0.06);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .table-upload-status.error {
+            background: rgba(239, 68, 68, 0.06);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .table-upload-status.success {
+            background: rgba(16, 185, 129, 0.06);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+
+        .table-upload-status .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Editable Table */
+        .editable-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .editable-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .editable-table thead th {
+            background: var(--bg-input);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .editable-table thead th:last-child {
+            width: 44px;
+            text-align: center;
+        }
+
+        .editable-table tbody td {
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .editable-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .editable-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.02);
+        }
+
+        .editable-table .cell-input {
+            width: 100%;
+            padding: 8px 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            transition: all 0.15s ease;
+        }
+
+        .editable-table .cell-input:hover {
+            background: var(--bg-input);
+        }
+
+        .editable-table .cell-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .editable-table .cell-input::placeholder {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .editable-table .row-remove-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            margin: 0 auto;
+            padding: 0;
+            background: none;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .editable-table .row-remove-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .editable-table .row-remove-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .table-add-row-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--bg-input);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .table-add-row-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.04);
+        }
+
+        .table-add-row-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Monthly Grid Toggle */
+        .monthly-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        .monthly-toggle-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .monthly-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .monthly-toggle-btn.expanded svg {
+            transform: rotate(90deg);
+        }
+
+        .monthly-grid-container {
+            display: none;
+        }
+
+        .monthly-grid-container.visible {
+            display: block;
+        }
+
         /* Grid layouts */
         .form-row {
             display: grid;
@@ -922,11 +1204,6 @@
                 <span>Voice of Data</span>
                 <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
             </a>
-            <a href="#actionplan" class="sidebar-nav-item" data-section="actionplan">
-                <span class="nav-number">11</span>
-                <span>Action Plan</span>
-                <span class="nav-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></span>
-            </a>
         </div>
     </nav>
 
@@ -983,14 +1260,6 @@
                         <label class="form-label" for="companyName">Company Name</label>
                         <input type="text" class="form-input" id="companyName" name="companyName" placeholder="Your Agency Name">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="personalAddress">Personal Address <span class="optional">(for shipping)</span></label>
-                        <textarea class="form-textarea" id="personalAddress" name="personalAddress" placeholder="Street address, City, State/Province, Postal Code, Country"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="preferredContact">Preferred Contact Method</label>
-                        <input type="text" class="form-input" id="preferredContact" name="preferredContact" placeholder="e.g., Slack, Email, SMS, Phone">
-                    </div>
                 </div>
             </section>
 
@@ -1044,7 +1313,7 @@
                         <input type="text" class="form-input" id="clientCountries" name="clientCountries" placeholder="e.g., US 50%, UK 30%, EU 20%">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Org Chart <span class="optional">(optional)</span></label>
+                        <label class="form-label">Org Chart</label>
                         <div class="file-upload-wrapper" data-field="orgChartFile">
                             <div class="file-upload-zone" id="orgChartZone">
                                 <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1104,10 +1373,6 @@
                     <div class="form-group">
                         <label class="form-label" for="fulfillmentTime">What % of your time is spent in Fulfillment / Ops?</label>
                         <input type="text" class="form-input" id="fulfillmentTime" name="fulfillmentTime" placeholder="e.g., Founder A: 25%, Founder B: 70%">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="additionalProblems">Additional problems/thoughts <span class="optional">(optional)</span></label>
-                        <textarea class="form-textarea large" id="additionalProblems" name="additionalProblems" placeholder="Any additional context, challenges, or thoughts you'd like to share..."></textarea>
                     </div>
                 </div>
             </section>
@@ -1239,59 +1504,21 @@
                         <label class="form-label" for="projectManagement">What is your Project Management System?</label>
                         <input type="text" class="form-input" id="projectManagement" name="projectManagement" placeholder="e.g., ClickUp, Asana, Monday, AirTable, Notion">
                     </div>
+                    <!-- Team Members Editable Table -->
                     <div class="form-group">
-                        <label class="form-label">Team & Compensation List <span class="optional">(optional)</span></label>
-                        <div class="file-upload-wrapper" data-field="teamCompFile">
-                            <div class="file-upload-zone" id="teamCompZone">
-                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                <span class="file-upload-text">Click to upload or drag and drop</span>
-                                <span class="file-upload-hint">PDF, Excel, or CSV (max 10MB)</span>
-                                <input type="file" class="file-upload-input" id="teamCompFile" name="teamCompFile" accept=".pdf,.xlsx,.xls,.csv,.doc,.docx">
-                            </div>
-                            <div class="file-preview" id="teamCompPreview" style="display: none;">
-                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <div class="file-preview-info">
-                                    <div class="file-preview-name" id="teamCompFileName"></div>
-                                    <div class="file-preview-size" id="teamCompFileSize"></div>
-                                </div>
-                                <button type="button" class="file-remove-btn" data-target="teamCompFile">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </div>
+                        <div class="editable-table-section">
+                            <div class="section-sublabel">Team Members & Compensation</div>
+                            <p class="section-subhint">Add your team members below, or upload a file to auto-populate.</p>
+                            <div id="teamMembersTableContainer"></div>
                         </div>
                     </div>
+
+                    <!-- Client Roster Editable Table -->
                     <div class="form-group">
-                        <label class="form-label">SOPs Document <span class="optional">(optional)</span></label>
-                        <p class="form-hint">Upload your standard operating procedures</p>
-                        <div class="file-upload-wrapper" data-field="sopsFile">
-                            <div class="file-upload-zone" id="sopsZone">
-                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                <span class="file-upload-text">Click to upload or drag and drop</span>
-                                <span class="file-upload-hint">PDF, Word, or text files (max 10MB)</span>
-                                <input type="file" class="file-upload-input" id="sopsFile" name="sopsFile" accept=".pdf,.doc,.docx,.txt,.xlsx,.xls">
-                            </div>
-                            <div class="file-preview" id="sopsPreview" style="display: none;">
-                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <div class="file-preview-info">
-                                    <div class="file-preview-name" id="sopsFileName"></div>
-                                    <div class="file-preview-size" id="sopsFileSize"></div>
-                                </div>
-                                <button type="button" class="file-remove-btn" data-target="sopsFile">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </div>
+                        <div class="editable-table-section">
+                            <div class="section-sublabel">Client Roster</div>
+                            <p class="section-subhint">Add your clients, their services, MRR, and assigned team members.</p>
+                            <div id="clientRosterTableContainer"></div>
                         </div>
                     </div>
                 </div>
@@ -1307,30 +1534,9 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Last 3 Years of Annual P&L / Balance Sheet</label>
-                        <p class="form-hint">We'll keep this confidential. Upload your financial documents.</p>
-                        <div class="file-upload-wrapper" data-field="financialsFile">
-                            <div class="file-upload-zone" id="financialsZone">
-                                <svg class="file-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                <span class="file-upload-text">Click to upload or drag and drop</span>
-                                <span class="file-upload-hint">PDF, Excel, or CSV (max 10MB)</span>
-                                <input type="file" class="file-upload-input" id="financialsFile" name="financialsFile" accept=".pdf,.xlsx,.xls,.csv,.doc,.docx">
-                            </div>
-                            <div class="file-preview" id="financialsPreview" style="display: none;">
-                                <svg class="file-preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <div class="file-preview-info">
-                                    <div class="file-preview-name" id="financialsFileName"></div>
-                                    <div class="file-preview-size" id="financialsFileSize"></div>
-                                </div>
-                                <button type="button" class="file-remove-btn" data-target="financialsFile">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </div>
+                        <p class="form-hint">We'll keep this confidential. Upload a file or fill in the table below.</p>
+                        <div class="editable-table-section">
+                            <div id="pnlTableContainer"></div>
                         </div>
                     </div>
                 </div>
@@ -1461,24 +1667,17 @@
                             <input type="text" class="form-input" id="arCollected" name="arCollected" placeholder="e.g., 90%">
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <!-- Section 11: Action Plan -->
-            <section class="form-section" id="actionplan">
-                <div class="form-card">
-                    <div class="section-header">
-                        <span class="section-badge">Section 11</span>
-                        <h2 class="section-title">Challenges & Action Plan</h2>
-                        <p class="section-description">We'll fill this in together during our audit review call.</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="identifiedChallenges">Identified Challenges <span class="optional">(leave blank - we'll fill together)</span></label>
-                        <textarea class="form-textarea large" id="identifiedChallenges" name="identifiedChallenges" placeholder="This section will be completed during our review call..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="actionPlan">Action Plan <span class="optional">(leave blank - we'll fill together)</span></label>
-                        <textarea class="form-textarea large" id="actionPlan" name="actionPlan" placeholder="This section will be completed during our review call..."></textarea>
+                    <!-- Monthly Breakdown (collapsible) -->
+                    <button type="button" class="monthly-toggle-btn" id="monthlyToggleBtn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                        Show Monthly Breakdown
+                    </button>
+                    <div class="monthly-grid-container" id="monthlyGridContainer">
+                        <p class="form-hint" style="margin-bottom: 16px;">Enter monthly values for the past 12 months. Leave blank if you don't have the data.</p>
+                        <div id="monthlyMetricsGrid"></div>
                     </div>
                 </div>
             </section>
@@ -1512,9 +1711,318 @@
         // Configuration
         const CONFIG = {
             STORAGE_KEY: 'agency_audit_form_data',
+            TABLE_STORAGE_KEY: 'agency_audit_table_data',
             WEBHOOK_URL: 'https://agencyoperators123.app.n8n.cloud/webhook/audit-btb',
+            PARSE_FILE_URL: 'https://agencyoperators123.app.n8n.cloud/webhook/parse-audit-file',
             AUTOSAVE_DELAY: 1000
         };
+
+        // ─── Reusable EditableTable Class ───
+        class EditableTable {
+            constructor(containerId, columns, tableType, options = {}) {
+                this.containerId = containerId;
+                this.container = document.getElementById(containerId);
+                this.columns = columns; // [{ key, label, placeholder }]
+                this.tableType = tableType; // 'team_members' | 'clients' | 'pnl'
+                this.exampleRow = options.exampleRow || null;
+                this.rows = [];
+                this._saveTimeout = null;
+
+                if (!this.container) {
+                    console.warn(`[EditableTable] Container #${containerId} not found`);
+                    return;
+                }
+
+                this._buildUploadZone();
+                this._buildTable();
+                this._buildAddButton();
+                this._loadFromStorage();
+
+                // Start with example row if no saved data
+                if (this.rows.length === 0) {
+                    if (this.exampleRow) {
+                        this.addRow(this.exampleRow);
+                    } else {
+                        this.addRow();
+                    }
+                }
+            }
+
+            _buildUploadZone() {
+                const uploadId = `${this.containerId}-upload`;
+                const zone = document.createElement('div');
+                zone.className = 'table-upload-zone';
+                zone.id = `${uploadId}-zone`;
+                zone.innerHTML = `
+                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <span class="upload-text">Upload a file to auto-populate this table</span>
+                    <span class="upload-hint">CSV, PDF, screenshot, Excel, Word — any format works</span>
+                    <input type="file" class="upload-file-input" id="${uploadId}-input">
+                `;
+                this.container.appendChild(zone);
+
+                // Status message area
+                this.statusEl = document.createElement('div');
+                this.statusEl.className = 'table-upload-status';
+                this.statusEl.style.display = 'none';
+                this.container.appendChild(this.statusEl);
+
+                // Event handlers
+                const fileInput = zone.querySelector('.upload-file-input');
+
+                zone.addEventListener('click', (e) => {
+                    if (e.target === fileInput) return;
+                    fileInput.value = '';
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this._handleFileUpload(e.target.files[0]);
+                    }
+                });
+
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.add('dragover');
+                });
+
+                zone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.remove('dragover');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.remove('dragover');
+                    if (e.dataTransfer.files.length > 0) {
+                        this._handleFileUpload(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+
+            _buildTable() {
+                this.wrapperEl = document.createElement('div');
+                this.wrapperEl.className = 'editable-table-wrapper';
+
+                this.tableEl = document.createElement('table');
+                this.tableEl.className = 'editable-table';
+
+                // Header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                this.columns.forEach(col => {
+                    const th = document.createElement('th');
+                    th.textContent = col.label;
+                    headerRow.appendChild(th);
+                });
+                const actionTh = document.createElement('th');
+                actionTh.textContent = '';
+                headerRow.appendChild(actionTh);
+                thead.appendChild(headerRow);
+                this.tableEl.appendChild(thead);
+
+                // Body
+                this.tbodyEl = document.createElement('tbody');
+                this.tableEl.appendChild(this.tbodyEl);
+
+                this.wrapperEl.appendChild(this.tableEl);
+                this.container.appendChild(this.wrapperEl);
+            }
+
+            _buildAddButton() {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'table-add-row-btn';
+                btn.innerHTML = `
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add Row
+                `;
+                btn.addEventListener('click', () => this.addRow());
+                this.container.appendChild(btn);
+            }
+
+            addRow(data) {
+                const rowData = data || {};
+                this.columns.forEach(col => {
+                    if (!(col.key in rowData)) {
+                        rowData[col.key] = '';
+                    }
+                });
+                this.rows.push(rowData);
+                this._renderRow(this.rows.length - 1);
+                this._scheduleSave();
+            }
+
+            _renderRow(index) {
+                const tr = document.createElement('tr');
+                tr.dataset.rowIndex = index;
+
+                this.columns.forEach(col => {
+                    const td = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'cell-input';
+                    input.placeholder = col.placeholder || '';
+                    input.value = this.rows[index][col.key] || '';
+                    input.dataset.key = col.key;
+                    input.dataset.rowIndex = index;
+
+                    input.addEventListener('input', (e) => {
+                        const ri = parseInt(e.target.dataset.rowIndex);
+                        this.rows[ri][e.target.dataset.key] = e.target.value;
+                        this._scheduleSave();
+                        if (typeof updateProgress === 'function') updateProgress();
+                    });
+
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                });
+
+                // Remove button
+                const actionTd = document.createElement('td');
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'row-remove-btn';
+                removeBtn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+                removeBtn.addEventListener('click', () => this.removeRow(index));
+                actionTd.appendChild(removeBtn);
+                tr.appendChild(actionTd);
+
+                this.tbodyEl.appendChild(tr);
+            }
+
+            removeRow(index) {
+                this.rows.splice(index, 1);
+                this.render();
+                this._scheduleSave();
+                if (typeof updateProgress === 'function') updateProgress();
+            }
+
+            render() {
+                this.tbodyEl.innerHTML = '';
+                this.rows.forEach((_, i) => this._renderRow(i));
+            }
+
+            getData() {
+                // Return only rows that have at least one non-empty value
+                return this.rows.filter(row =>
+                    this.columns.some(col => row[col.key] && row[col.key].trim() !== '')
+                );
+            }
+
+            setData(rows) {
+                this.rows = rows.map(row => {
+                    const clean = {};
+                    this.columns.forEach(col => {
+                        clean[col.key] = row[col.key] || '';
+                    });
+                    return clean;
+                });
+                this.render();
+                this._scheduleSave();
+                if (typeof updateProgress === 'function') updateProgress();
+            }
+
+            _scheduleSave() {
+                clearTimeout(this._saveTimeout);
+                this._saveTimeout = setTimeout(() => this._saveToStorage(), CONFIG.AUTOSAVE_DELAY);
+            }
+
+            _saveToStorage() {
+                try {
+                    const allTableData = JSON.parse(localStorage.getItem(CONFIG.TABLE_STORAGE_KEY) || '{}');
+                    allTableData[this.tableType] = this.rows;
+                    localStorage.setItem(CONFIG.TABLE_STORAGE_KEY, JSON.stringify(allTableData));
+                    if (typeof showAutosaveIndicator === 'function') showAutosaveIndicator();
+                } catch (e) {
+                    console.error('[EditableTable] Save error:', e);
+                }
+            }
+
+            _loadFromStorage() {
+                try {
+                    const allTableData = JSON.parse(localStorage.getItem(CONFIG.TABLE_STORAGE_KEY) || '{}');
+                    if (allTableData[this.tableType] && allTableData[this.tableType].length > 0) {
+                        this.rows = allTableData[this.tableType];
+                        this.render();
+                    }
+                } catch (e) {
+                    console.error('[EditableTable] Load error:', e);
+                }
+            }
+
+            async _handleFileUpload(file) {
+                if (file.size > 10 * 1024 * 1024) {
+                    this._showStatus('error', 'File is too large. Maximum size is 10MB.');
+                    return;
+                }
+
+                this._showStatus('loading', `Processing "${file.name}"...`);
+
+                try {
+                    const reader = new FileReader();
+                    const fileData = await new Promise((resolve, reject) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = () => reject(reader.error);
+                        reader.readAsDataURL(file);
+                    });
+
+                    const response = await fetch(CONFIG.PARSE_FILE_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            file_data: fileData,
+                            file_name: file.name,
+                            file_type: file.type,
+                            table_type: this.tableType,
+                            columns: this.columns.map(c => c.key)
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.rows && result.rows.length > 0) {
+                        this.setData(result.rows);
+                        this._showStatus('success', `Populated ${result.rows.length} rows from "${file.name}". Review and edit as needed.`);
+                    } else {
+                        this._showStatus('error', 'No data could be extracted from this file. Try a different format or add rows manually.');
+                    }
+                } catch (error) {
+                    console.error('[EditableTable] Upload error:', error);
+                    this._showStatus('error', 'Could not process the file. You can add rows manually instead.');
+                }
+            }
+
+            _showStatus(type, message) {
+                this.statusEl.style.display = 'flex';
+                this.statusEl.className = `table-upload-status ${type === 'loading' ? '' : type}`;
+
+                if (type === 'loading') {
+                    this.statusEl.innerHTML = `<span class="spinner"></span> ${message}`;
+                } else {
+                    this.statusEl.textContent = message;
+                    // Auto-hide success/error after 8 seconds
+                    setTimeout(() => {
+                        this.statusEl.style.display = 'none';
+                    }, 8000);
+                }
+            }
+        }
+
+        // Table instances (initialized in DOMContentLoaded)
+        let teamMembersTable, clientRosterTable, pnlTable;
 
         // DOM Elements
         const form = document.getElementById('auditForm');
@@ -1531,20 +2039,48 @@
 
         // File upload storage
         const uploadedFiles = {
-            orgChartFile: null,
-            teamCompFile: null,
-            sopsFile: null,
-            financialsFile: null
+            orgChartFile: null
         };
 
-        // File upload configuration
-        const fileFields = ['orgChartFile', 'teamCompFile', 'sopsFile', 'financialsFile'];
+        // File upload configuration (teamCompFile, sopsFile, financialsFile removed — replaced by editable tables)
+        const fileFields = ['orgChartFile'];
         const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Load any saved form data from previous session
             loadFormData();
+
+            // Initialize editable tables
+            teamMembersTable = new EditableTable('teamMembersTableContainer', [
+                { key: 'team_member', label: 'Team Member', placeholder: 'e.g., James Smith' },
+                { key: 'position', label: 'Position', placeholder: 'e.g., Creative Strategist' },
+                { key: 'pay', label: 'Pay', placeholder: 'e.g., $4,000/mo' },
+                { key: 'ranking', label: 'Ranking', placeholder: 'e.g., A, B, C' }
+            ], 'team_members', {
+                exampleRow: { team_member: 'James Smith', position: 'Creative Strategist', pay: '$4,000/mo', ranking: 'B' }
+            });
+
+            clientRosterTable = new EditableTable('clientRosterTableContainer', [
+                { key: 'client', label: 'Client', placeholder: 'e.g., Acme Corp' },
+                { key: 'services', label: 'Services', placeholder: 'e.g., Paid Media, Creative' },
+                { key: 'avg_mrr', label: 'Avg MRR', placeholder: 'e.g., $12,000' },
+                { key: 'team_members', label: 'Team Members', placeholder: 'e.g., Jon - Strategist, James - Editor' }
+            ], 'clients', {
+                exampleRow: { client: 'Acme Corp', services: 'Paid Media, Creative', avg_mrr: '$12,000', team_members: 'Jon - Strategist, James - Editor' }
+            });
+
+            pnlTable = new EditableTable('pnlTableContainer', [
+                { key: 'line_item', label: 'Line Item', placeholder: 'e.g., Revenue' },
+                { key: 'year_1', label: 'Year 1', placeholder: 'e.g., $500,000' },
+                { key: 'year_2', label: 'Year 2', placeholder: 'e.g., $750,000' },
+                { key: 'year_3', label: 'Year 3', placeholder: 'e.g., $1,000,000' }
+            ], 'pnl', {
+                exampleRow: { line_item: 'Revenue', year_1: '$500,000', year_2: '$750,000', year_3: '$1,000,000' }
+            });
+
+            // Build monthly metrics grid
+            buildMonthlyGrid();
 
             updateProgress();
             setupAutoSave();
@@ -1770,21 +2306,19 @@
                     monthly_averages: {},
                     averages: {}
                 },
-                action_plan: {}
             };
 
             // Map form fields to structured data
             const fieldMappings = {
-                contact: ['yourName', 'yourEmail', 'yourPhone', 'companyName', 'personalAddress', 'preferredContact'],
+                contact: ['yourName', 'yourEmail', 'yourPhone', 'companyName'],
                 strategy: ['strategy', 'mission', 'vision', 'coreValues', 'newClientOffer', 'services', 'icp', 'clientValue', 'clientCountries'],
-                goals: ['successDefinition', 'initiatives', 'oneYearGoal', 'threeToFiveYearGoal', 'biggestChallenges', 'fulfillmentTime', 'additionalProblems'],
+                goals: ['successDefinition', 'initiatives', 'oneYearGoal', 'threeToFiveYearGoal', 'biggestChallenges', 'fulfillmentTime'],
                 lead_generation: ['leadGenMethods', 'leadGenPercentages', 'leadGenCRM'],
                 lead_nurture: ['leadNurtureProcess', 'leadNurtureCRM'],
                 sales: ['salesProcess', 'salesTeamSize', 'salesCRM'],
                 recruiting: ['recruitingProcess', 'hiringProcess', 'teamOnboarding', 'trainingProcess', 'recruitingCRM'],
                 operations: ['clientOnboarding', 'clientMeetingCadence', 'clientReportingCadence', 'teamMeetingCadence', 'projectManagement'],
-                financials: [],
-                action_plan: ['identifiedChallenges', 'actionPlan']
+                financials: []
             };
 
             // Populate structured data (always include all fields, even if empty)
@@ -1815,13 +2349,32 @@
                 data.voice_of_data.averages[field] = value || null;
             });
 
+            // Handle monthly grid data
+            data.voice_of_data.monthly = {};
+            MONTHLY_METRICS.forEach(metric => {
+                const monthValues = {};
+                let hasData = false;
+                MONTHS.forEach((month, mi) => {
+                    const val = formData.get(`monthly_${metric.key}_${mi}`);
+                    if (val && val.trim() !== '') {
+                        monthValues[month.toLowerCase()] = val;
+                        hasData = true;
+                    }
+                });
+                if (hasData) {
+                    data.voice_of_data.monthly[metric.key] = monthValues;
+                }
+            });
+
             // Add uploaded files
             data.files = {
-                orgChart: uploadedFiles.orgChartFile || null,
-                teamComp: uploadedFiles.teamCompFile || null,
-                sops: uploadedFiles.sopsFile || null,
-                financials: uploadedFiles.financialsFile || null
+                orgChart: uploadedFiles.orgChartFile || null
             };
+
+            // Add editable table data
+            data.operations.team_members = teamMembersTable ? teamMembersTable.getData() : [];
+            data.operations.client_roster = clientRosterTable ? clientRosterTable.getData() : [];
+            data.financials.pnl_data = pnlTable ? pnlTable.getData() : [];
 
             return data;
         }
@@ -1874,7 +2427,7 @@
 
         // Update section completion indicators
         function updateSectionCompletion() {
-            const sections = ['contact', 'strategy', 'goals', 'leadgen', 'leadnurture', 'sales', 'recruiting', 'operations', 'financials', 'voiceofdata', 'actionplan'];
+            const sections = ['contact', 'strategy', 'goals', 'leadgen', 'leadnurture', 'sales', 'recruiting', 'operations', 'financials', 'voiceofdata'];
 
             sections.forEach(sectionId => {
                 const section = document.getElementById(sectionId);
@@ -1969,6 +2522,92 @@
             });
         }
 
+        // Monthly Grid Builder
+        const MONTHLY_METRICS = [
+            { key: 'client_referrals', label: 'Client Referrals (#)' },
+            { key: 'new_lead_convos', label: 'New Lead Convos (#)' },
+            { key: 'calls_booked_pct', label: 'Calls Booked (%)' },
+            { key: 'calls_showed_pct', label: 'Calls Showed (%)' },
+            { key: 'qualified_calls_pct', label: 'Qualified Calls (%)' },
+            { key: 'sales_pct', label: 'Sales (%)' },
+            { key: 'new_customer_aov', label: 'New Customer AOV ($)' },
+            { key: 'total_clients', label: 'Total Clients (#)' },
+            { key: 'total_capacity', label: 'Client Capacity (#)' },
+            { key: 'client_churn_pct', label: 'Client Churn (%)' },
+            { key: 'lead_time_days', label: 'Lead Time (Days)' },
+            { key: 'on_time_pct', label: 'On Time (%)' },
+            { key: 'errors_pct', label: 'Errors (%)' },
+            { key: 'rework_pct', label: 'Rework (%)' },
+            { key: 'clients_upsold', label: 'Clients Upsold (#)' },
+            { key: 'team_size', label: 'Team Size (#)' },
+            { key: 'team_churn_pct', label: 'Team Churn (%)' },
+            { key: 'revenue', label: 'Revenue ($)' },
+            { key: 'rev_per_employee', label: 'Rev/Employee ($)' },
+            { key: 'gross_margins_pct', label: 'Gross Margins (%)' },
+            { key: 'profit_margin_pct', label: 'Profit Margin (%)' },
+            { key: 'net_cashflow', label: 'Net Cashflow ($)' },
+            { key: 'ar_collected_pct', label: 'AR Collected (%)' }
+        ];
+
+        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function buildMonthlyGrid() {
+            const container = document.getElementById('monthlyMetricsGrid');
+            if (!container) return;
+
+            // Header row
+            const header = document.createElement('div');
+            header.className = 'metric-header';
+            header.innerHTML = '<span>Metric</span>' + MONTHS.map(m => `<span>${m}</span>`).join('');
+            container.appendChild(header);
+
+            // Data rows
+            MONTHLY_METRICS.forEach(metric => {
+                const row = document.createElement('div');
+                row.className = 'metric-row';
+
+                const label = document.createElement('span');
+                label.className = 'metric-label';
+                label.textContent = metric.label;
+                label.title = metric.label;
+                row.appendChild(label);
+
+                MONTHS.forEach((month, mi) => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'metric-input';
+                    input.name = `monthly_${metric.key}_${mi}`;
+                    input.placeholder = month;
+                    input.addEventListener('input', () => {
+                        clearTimeout(autosaveTimeout);
+                        autosaveTimeout = setTimeout(() => {
+                            saveFormData();
+                            updateProgress();
+                        }, CONFIG.AUTOSAVE_DELAY);
+                    });
+                    row.appendChild(input);
+                });
+
+                container.appendChild(row);
+            });
+
+            // Toggle button
+            const toggleBtn = document.getElementById('monthlyToggleBtn');
+            const gridContainer = document.getElementById('monthlyGridContainer');
+            if (toggleBtn && gridContainer) {
+                toggleBtn.addEventListener('click', () => {
+                    const isExpanded = gridContainer.classList.toggle('visible');
+                    toggleBtn.classList.toggle('expanded', isExpanded);
+                    toggleBtn.querySelector('svg + *') || null;
+                    // Update button text
+                    const textNode = toggleBtn.childNodes[toggleBtn.childNodes.length - 1];
+                    if (textNode) {
+                        textNode.textContent = isExpanded ? ' Hide Monthly Breakdown' : ' Show Monthly Breakdown';
+                    }
+                });
+            }
+        }
+
         // Form Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1991,10 +2630,12 @@
 
                 console.log('[Submit] Payload size:', payloadSizeKB, 'KB (', payloadSizeMB, 'MB)');
                 console.log('[Submit] Files in payload:', {
-                    orgChart: data.files.orgChart ? { filename: data.files.orgChart.filename, size: data.files.orgChart.size, hasData: !!data.files.orgChart.data } : null,
-                    teamComp: data.files.teamComp ? { filename: data.files.teamComp.filename, size: data.files.teamComp.size, hasData: !!data.files.teamComp.data } : null,
-                    sops: data.files.sops ? { filename: data.files.sops.filename, size: data.files.sops.size, hasData: !!data.files.sops.data } : null,
-                    financials: data.files.financials ? { filename: data.files.financials.filename, size: data.files.financials.size, hasData: !!data.files.financials.data } : null
+                    orgChart: data.files.orgChart ? { filename: data.files.orgChart.filename, size: data.files.orgChart.size, hasData: !!data.files.orgChart.data } : null
+                });
+                console.log('[Submit] Tables in payload:', {
+                    team_members: data.operations.team_members?.length || 0,
+                    client_roster: data.operations.client_roster?.length || 0,
+                    pnl_data: data.financials.pnl_data?.length || 0
                 });
 
                 // Warn if payload is very large (>5MB)
