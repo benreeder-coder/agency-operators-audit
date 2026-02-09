@@ -2034,36 +2034,28 @@
                 { key: 'name', label: 'Name', placeholder: 'e.g., Sarah Johnson' },
                 { key: 'role', label: 'Role', placeholder: 'e.g., Account Manager' },
                 { key: 'reports_to', label: 'Reports To', placeholder: 'e.g., Mike Davis (CEO)' }
-            ], 'org_chart', {
-                exampleRow: { name: 'Sarah Johnson', role: 'Account Manager', reports_to: 'Mike Davis (CEO)' }
-            });
+            ], 'org_chart');
 
             teamMembersTable = new EditableTable('teamMembersTableContainer', [
                 { key: 'team_member', label: 'Team Member', placeholder: 'e.g., James Smith' },
                 { key: 'position', label: 'Position', placeholder: 'e.g., Creative Strategist' },
                 { key: 'pay', label: 'Pay', placeholder: 'e.g., $4,000/mo' },
                 { key: 'ranking', label: 'Ranking', placeholder: 'e.g., A, B, C' }
-            ], 'team_members', {
-                exampleRow: { team_member: 'James Smith', position: 'Creative Strategist', pay: '$4,000/mo', ranking: 'B' }
-            });
+            ], 'team_members');
 
             clientRosterTable = new EditableTable('clientRosterTableContainer', [
                 { key: 'client', label: 'Client', placeholder: 'e.g., Acme Corp' },
                 { key: 'services', label: 'Services', placeholder: 'e.g., Paid Media, Creative' },
                 { key: 'avg_mrr', label: 'Avg MRR', placeholder: 'e.g., $12,000' },
                 { key: 'team_members', label: 'Team Members', placeholder: 'e.g., Jon - Strategist, James - Editor' }
-            ], 'clients', {
-                exampleRow: { client: 'Acme Corp', services: 'Paid Media, Creative', avg_mrr: '$12,000', team_members: 'Jon - Strategist, James - Editor' }
-            });
+            ], 'clients');
 
             pnlTable = new EditableTable('pnlTableContainer', [
                 { key: 'line_item', label: 'Line Item', placeholder: 'e.g., Revenue' },
                 { key: 'year_1', label: 'Year 1', placeholder: 'e.g., $500,000' },
                 { key: 'year_2', label: 'Year 2', placeholder: 'e.g., $750,000' },
                 { key: 'year_3', label: 'Year 3', placeholder: 'e.g., $1,000,000' }
-            ], 'pnl', {
-                exampleRow: { line_item: 'Revenue', year_1: '$500,000', year_2: '$750,000', year_3: '$1,000,000' }
-            });
+            ], 'pnl');
 
             // Build monthly metrics grid
             buildMonthlyGrid();
