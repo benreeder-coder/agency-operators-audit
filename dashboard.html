@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Agency Operators</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-white: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-focus: #3b82f6;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #ec4899 100%);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .dash-header {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .dash-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .dash-header-left img { height: 36px; }
+        .dash-header-left h1 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .dash-header-right { display: flex; align-items: center; gap: 12px; }
+        .dash-header-right a {
+            font-size: 13px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .dash-content { max-width: 1200px; margin: 0 auto; padding: 24px 32px; }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .stat-card-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .stat-card-value {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .toolbar input, .toolbar select {
+            font-family: var(--font-body);
+            font-size: 14px;
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-white);
+            color: var(--text-primary);
+            outline: none;
+        }
+        .toolbar input:focus, .toolbar select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .toolbar input { min-width: 250px; }
+
+        .data-table {
+            width: 100%;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .data-table table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--bg-input); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .status-draft { background: #fef3c7; color: #92400e; }
+        .status-submitted { background: #d1fae5; color: #065f46; }
+
+        .progress-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--bg-white);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+
+        #dashUserInfo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #dashUserInfo > div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .dash-header { padding: 12px 16px; }
+            .dash-content { padding: 16px; }
+            .toolbar input { min-width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .stat-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="dash-header">
+        <div class="dash-header-left">
+            <img src="assets/logo.jpg" alt="Agency Operators">
+            <h1>Admin Dashboard</h1>
+        </div>
+        <div class="dash-header-right">
+            <a href="/form.html">Back to Form</a>
+            <div id="dashUserInfo"></div>
+            <button onclick="signOut()" style="padding:6px 14px;font-size:13px;font-weight:500;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-white);cursor:pointer;color:var(--text-secondary);">Sign Out</button>
+        </div>
+    </header>
+
+    <div class="dash-content">
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-card-label">Total Audits</div>
+                <div class="stat-card-value" id="statAudits">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Submitted</div>
+                <div class="stat-card-value" style="color:var(--accent-green);" id="statSubmitted">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Drafts</div>
+                <div class="stat-card-value" style="color:var(--accent-yellow);" id="statDrafts">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Team Members</div>
+                <div class="stat-card-value" style="color:var(--accent-cyan);" id="statTeam">0</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="audits">Audits</button>
+            <button class="tab-btn" data-tab="team">Team Members</button>
+            <button class="tab-btn" data-tab="progress">Doc Progress</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-audits">
+            <div class="toolbar">
+                <input type="text" id="auditSearch" placeholder="Search by company, name, or email...">
+                <select id="auditStatusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="draft">Draft</option>
+                    <option value="submitted">Submitted</option>
+                </select>
+            </div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Submitted</th>
+                            <th>Completion</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditsTableBody">
+                        <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-team">
+            <div class="toolbar">
+                <input type="text" id="teamSearch" placeholder="Search by name, position, or company...">
+            </div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Compensation</th>
+                            <th>Company</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamTableBody">
+                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:40px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-progress">
+            <div id="progressCards">
+                <p style="text-align:center;color:var(--text-muted);padding:40px;">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Detail Modal -->
+    <div class="modal-overlay" id="auditModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
