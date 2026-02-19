@@ -37,6 +37,21 @@ https://zhhikvjopuylxuxbbedg.supabase.co/auth/v1/callback
 
 ---
 
+## Part 1b: Publish the OAuth App (REQUIRED)
+
+By default, your OAuth app is in "Testing" mode. In Testing mode, **only the app owner can sign in**. Anyone else gets a 403 "access_denied" error from Google.
+
+Since this app only requests `email` and `profile` scopes, publishing does NOT require Google's verification review.
+
+1. Go to **APIs & Services** > **OAuth consent screen**
+2. Under "Publishing status", click **Publish App**
+3. Confirm when prompted (agree to terms)
+4. Status should change from "Testing" to "In production"
+
+Without this step, only the Google account that created the project can sign in.
+
+---
+
 ## Part 2: Enable Google in Supabase
 
 1. Go to https://supabase.com/dashboard/project/zhhikvjopuylxuxbbedg
@@ -57,24 +72,29 @@ https://zhhikvjopuylxuxbbedg.supabase.co/auth/v1/callback
 2. Set **Site URL** to:
 
 ```
-https://auditfrontend-1qf483fcx-ben-reeders-projects.vercel.app
+https://agency-ops-audit.vercel.app
 ```
 
 3. Under **Redirect URLs**, click **Add URL** and add:
 
 ```
-https://auditfrontend-1qf483fcx-ben-reeders-projects.vercel.app/form.html
+https://agency-ops-audit.vercel.app/form.html
 ```
 
-4. Click **Save**
+4. If there are old URLs (e.g., containing `auditfrontend-1qf483fcx-ben-reeders-projects.vercel.app`), remove them
+5. Click **Save**
 
 ---
 
 ## Verification
 
-1. Open https://auditfrontend-1qf483fcx-ben-reeders-projects.vercel.app
+1. Open https://agency-ops-audit.vercel.app
 2. Click **Sign in with Google**
 3. Complete the Google sign-in flow
 4. You should be redirected to the audit form, with your name and avatar in the sidebar
 
-If you get a "redirect_uri_mismatch" error, double-check that the callback URL in Google Cloud Console (Part 1, step 10) matches exactly: `https://zhhikvjopuylxuxbbedg.supabase.co/auth/v1/callback`
+### Troubleshooting
+
+- **"Access blocked" or 403 from Google**: The OAuth app is still in Testing mode. Complete Part 1b above.
+- **"redirect_uri_mismatch" error**: The callback URL in Google Cloud Console (Part 1, step 10) must match exactly: `https://zhhikvjopuylxuxbbedg.supabase.co/auth/v1/callback`
+- **Redirects to wrong URL after sign-in**: The Supabase redirect URLs (Part 3) must use the production domain `https://agency-ops-audit.vercel.app`, not a deployment-specific Vercel URL.

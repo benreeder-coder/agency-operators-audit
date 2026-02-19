@@ -31,7 +31,37 @@ async function signInWithGoogle() {
         provider: 'google',
         options: { redirectTo }
     });
-    if (error) console.error('Sign-in error:', error);
+    if (error) {
+        console.error('Sign-in error:', error);
+        showAuthError('Sign-in failed: ' + (error.message || 'Unknown error. Please try again.'));
+    }
+}
+
+function showAuthError(message) {
+    let el = document.getElementById('auth-error');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'auth-error';
+        el.style.cssText = 'margin-top:16px;padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;font-size:0.875rem;line-height:1.4;text-align:center;';
+        const btn = document.querySelector('.google-btn');
+        if (btn) btn.parentNode.insertBefore(el, btn.nextSibling);
+        else document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.style.display = 'block';
+}
+
+function checkOAuthError() {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const params = new URLSearchParams(hash.substring(1));
+    const error = params.get('error');
+    const desc = params.get('error_description');
+    if (error) {
+        const msg = desc ? decodeURIComponent(desc.replace(/\+/g, ' ')) : error;
+        showAuthError('Sign-in failed: ' + msg);
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
 }
 
 async function signOut() {

@@ -118,6 +118,7 @@
     <script src="js/auth.js"></script>
     <script>
         (async () => {
+            checkOAuthError();
             const session = await getSession();
             if (session) {
                 const domain = session.user.email?.split('@')[1];
