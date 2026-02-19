@@ -1725,6 +1725,12 @@
         let loadedAuditData = null;
         let needsMigrationSave = false;
 
+        // Realtime sync state
+        let lastSavedFlatFields = {};
+        let lastSavedTableData = {};
+        let realtimeChannel = null;
+        let isApplyingRemote = false;
+
         // One-time cleanup: clear stale example data from previous versions
         if (!localStorage.getItem('audit_table_v2_clean')) {
             localStorage.removeItem(CONFIG.TABLE_STORAGE_KEY);
@@ -2110,6 +2116,15 @@
                 if (fd?.operations?.team_members?.length) teamMembersTable.setData(fd.operations.team_members);
                 if (fd?.operations?.client_roster?.length) clientRosterTable.setData(fd.operations.client_roster);
                 if (fd?.financials?.pnl_data?.length) pnlTable.setData(fd.financials.pnl_data);
+
+                // Snapshot table data for realtime merge baseline
+                lastSavedTableData = {
+                    org_chart: fd?.strategy?.org_chart || [],
+                    team_members: fd?.operations?.team_members || [],
+                    client_roster: fd?.operations?.client_roster || [],
+                    pnl_data: fd?.financials?.pnl_data || []
+                };
+
                 console.log('[Load] Restored table data from Supabase');
                 loadedAuditData = null;
             }
@@ -2132,16 +2147,21 @@
         });
 
         // Form Data Management
+        function getUserDomain() {
+            return currentSession?.user?.email?.split('@')[1] || '';
+        }
+
         async function loadFormData() {
             // Try Supabase first if authenticated
             if (currentSession) {
                 try {
-                    // RLS handles domain filtering: returns own + same-domain + admin-visible audits
+                    const domain = getUserDomain();
+                    // Explicit domain filter + RLS as belt-and-suspenders
                     const { data: audits } = await _supabase
                         .from('audits')
                         .select('*')
+                        .eq('email_domain', domain)
                         .eq('status', 'draft')
-                        .order('updated_at', { ascending: false })
                         .limit(1);
 
                     if (audits && audits.length > 0) {
@@ -2156,8 +2176,12 @@
                                 const element = form.elements[key];
                                 if (element) element.value = flat[key];
                             });
+                            lastSavedFlatFields = { ...flat };
                         }
                         console.log('[Load] Restored from Supabase, audit:', currentAuditId);
+
+                        // Start listening for changes from other users
+                        subscribeToAuditChanges();
                         return;
                     }
                 } catch (e) {
@@ -2221,7 +2245,7 @@
         }
 
         async function saveToSupabase() {
-            if (!currentSession || isSaving) return;
+            if (!currentSession || isSaving || isApplyingRemote) return;
             isSaving = true;
             try {
                 const structuredData = getFormDataAsJSON();
@@ -2253,6 +2277,7 @@
                     form_data: structuredData,
                     completion_percentage: completionPct,
                     section_completion: sectionCompletion,
+                    last_edited_by: currentSession.user.id,
                     updated_at: new Date().toISOString()
                 };
 
@@ -2260,17 +2285,149 @@
                     // Update existing -- don't overwrite user_id (keep original creator)
                     await _supabase.from('audits').update(auditRow).eq('id', currentAuditId);
                 } else {
-                    // New audit -- set user_id to current user
+                    // New audit -- set user_id and domain
                     auditRow.user_id = currentSession.user.id;
-                    const { data } = await _supabase.from('audits').insert(auditRow).select('id').single();
-                    if (data) currentAuditId = data.id;
+                    auditRow.email_domain = getUserDomain();
+                    const { data, error } = await _supabase.from('audits').insert(auditRow).select('id').single();
+
+                    if (error && error.code === '23505') {
+                        // Domain draft already exists (another user beat us) -- load and update it
+                        console.log('[Supabase] Domain audit already exists, attaching to it');
+                        const { data: existing } = await _supabase
+                            .from('audits')
+                            .select('id')
+                            .eq('email_domain', auditRow.email_domain)
+                            .eq('status', 'draft')
+                            .single();
+                        if (existing) {
+                            currentAuditId = existing.id;
+                            delete auditRow.user_id;
+                            delete auditRow.email_domain;
+                            await _supabase.from('audits').update(auditRow).eq('id', currentAuditId);
+                            subscribeToAuditChanges();
+                        }
+                    } else if (data) {
+                        currentAuditId = data.id;
+                        subscribeToAuditChanges();
+                    }
                 }
+
+                // Snapshot what we just saved (for merge conflict detection)
+                lastSavedFlatFields = { ...flatData };
+                lastSavedTableData = {
+                    org_chart: structuredData.strategy?.org_chart || [],
+                    team_members: structuredData.operations?.team_members || [],
+                    client_roster: structuredData.operations?.client_roster || [],
+                    pnl_data: structuredData.financials?.pnl_data || []
+                };
+
                 console.log('[Supabase] Saved draft, audit:', currentAuditId);
             } catch (e) {
                 console.error('[Supabase] Save error:', e);
             } finally {
                 isSaving = false;
             }
+        }
+
+        // ─── Realtime Sync ───────────────────────────────────────
+        function subscribeToAuditChanges() {
+            if (!currentAuditId || realtimeChannel) return;
+
+            realtimeChannel = _supabase.channel('audit-' + currentAuditId)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'audits',
+                    filter: 'id=eq.' + currentAuditId
+                }, (payload) => {
+                    // Skip our own changes
+                    if (payload.new.last_edited_by === currentSession.user.id) return;
+                    console.log('[Realtime] Remote update from:', payload.new.user_email);
+                    mergeRemoteChanges(payload.new);
+                })
+                .subscribe((status) => {
+                    console.log('[Realtime] Subscription status:', status);
+                });
+        }
+
+        function mergeRemoteChanges(remoteAudit) {
+            isApplyingRemote = true;
+            try {
+                const remoteFlatFields = remoteAudit.form_data?._flatFields || {};
+                const localFlatFields = {};
+                new FormData(form).forEach((v, k) => { localFlatFields[k] = v; });
+
+                let fieldsApplied = 0;
+
+                // Field-level merge: only apply remote value if local user hasn't modified the field
+                Object.keys(remoteFlatFields).forEach(key => {
+                    const remoteVal = remoteFlatFields[key] || '';
+                    const localVal = localFlatFields[key] || '';
+                    const lastSavedVal = lastSavedFlatFields[key] || '';
+
+                    // Local unchanged since last save → safe to apply remote
+                    if (localVal === lastSavedVal && remoteVal !== localVal) {
+                        const element = form.elements[key];
+                        if (element) {
+                            element.value = remoteVal;
+                            fieldsApplied++;
+                        }
+                    }
+                });
+
+                // Merge table data (apply remote if local tables haven't changed)
+                const fd = remoteAudit.form_data;
+                const tables = [
+                    { key: 'org_chart', path: fd?.strategy?.org_chart, ref: typeof orgChartTable !== 'undefined' ? orgChartTable : null, savedKey: 'org_chart' },
+                    { key: 'team_members', path: fd?.operations?.team_members, ref: typeof teamMembersTable !== 'undefined' ? teamMembersTable : null, savedKey: 'team_members' },
+                    { key: 'client_roster', path: fd?.operations?.client_roster, ref: typeof clientRosterTable !== 'undefined' ? clientRosterTable : null, savedKey: 'client_roster' },
+                    { key: 'pnl_data', path: fd?.financials?.pnl_data, ref: typeof pnlTable !== 'undefined' ? pnlTable : null, savedKey: 'pnl_data' }
+                ];
+
+                tables.forEach(t => {
+                    if (t.path?.length && t.ref) {
+                        const localData = JSON.stringify(t.ref.getData());
+                        const savedData = JSON.stringify(lastSavedTableData[t.savedKey] || []);
+                        if (localData === savedData) {
+                            t.ref.setData(t.path);
+                            fieldsApplied++;
+                        }
+                    }
+                });
+
+                // Update our saved reference to the remote state
+                lastSavedFlatFields = { ...remoteFlatFields };
+                if (fd) {
+                    lastSavedTableData = {
+                        org_chart: fd.strategy?.org_chart || [],
+                        team_members: fd.operations?.team_members || [],
+                        client_roster: fd.operations?.client_roster || [],
+                        pnl_data: fd.financials?.pnl_data || []
+                    };
+                }
+
+                if (fieldsApplied > 0) {
+                    const editorName = remoteAudit.user_email?.split('@')[0] || 'Someone';
+                    showSyncNotification(editorName + ' updated the form');
+                    updateProgress();
+                }
+            } finally {
+                isApplyingRemote = false;
+            }
+        }
+
+        function showSyncNotification(message) {
+            let el = document.getElementById('syncNotification');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'syncNotification';
+                el.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;opacity:0;transition:opacity 0.3s;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+                document.body.appendChild(el);
+            }
+            el.textContent = message;
+            el.style.opacity = '1';
+            clearTimeout(el._hideTimer);
+            el._hideTimer = setTimeout(() => { el.style.opacity = '0'; }, 4000);
         }
 
         // File Upload Functions
@@ -2793,14 +2950,26 @@
                             submitted_at: new Date().toISOString(),
                             updated_at: new Date().toISOString()
                         };
+                        auditRow.last_edited_by = currentSession.user.id;
                         if (currentAuditId) {
                             // Update existing -- don't overwrite user_id (keep original creator)
                             await _supabase.from('audits').update(auditRow).eq('id', currentAuditId);
                         } else {
-                            // New audit -- set user_id to current user
+                            // New audit -- set user_id and domain
                             auditRow.user_id = currentSession.user.id;
-                            const { data: row } = await _supabase.from('audits').insert(auditRow).select('id').single();
-                            if (row) currentAuditId = row.id;
+                            auditRow.email_domain = getUserDomain();
+                            const { data: row, error: insErr } = await _supabase.from('audits').insert(auditRow).select('id').single();
+                            if (insErr && insErr.code === '23505') {
+                                const { data: existing } = await _supabase.from('audits').select('id').eq('email_domain', auditRow.email_domain).eq('status', 'draft').single();
+                                if (existing) {
+                                    currentAuditId = existing.id;
+                                    delete auditRow.user_id;
+                                    delete auditRow.email_domain;
+                                    await _supabase.from('audits').update(auditRow).eq('id', currentAuditId);
+                                }
+                            } else if (row) {
+                                currentAuditId = row.id;
+                            }
                         }
                         console.log('[Submit] Saved to Supabase as submitted');
                     } catch (sbErr) {
