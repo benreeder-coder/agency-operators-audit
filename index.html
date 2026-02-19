@@ -120,7 +120,12 @@
         (async () => {
             const session = await getSession();
             if (session) {
-                window.location.href = '/form.html';
+                const domain = session.user.email?.split('@')[1];
+                if (domain === 'builderbenai.com' || domain === 'agencyoperators.io') {
+                    window.location.href = '/dashboard.html';
+                } else {
+                    window.location.href = '/form.html';
+                }
                 return;
             }
             document.getElementById('googleSignIn').addEventListener('click', signInWithGoogle);

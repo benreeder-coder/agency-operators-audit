@@ -2062,6 +2062,14 @@
 
             // Render user info in sidebar
             const adminFlag = await isAdmin(currentSession);
+
+            // Admin domains don't fill forms -- redirect to dashboard
+            const userDomain = currentSession.user.email?.split('@')[1];
+            if (userDomain === 'builderbenai.com' || userDomain === 'agencyoperators.io') {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
             renderUserInfo(document.getElementById('userInfoContainer'), currentSession, adminFlag);
 
             // Load form data (tries Supabase first, falls back to localStorage)
