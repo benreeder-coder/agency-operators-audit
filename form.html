@@ -2057,6 +2057,19 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
+            // Capture OAuth errors before auth check - errors arrive in URL hash
+            // but requireAuth() would silently redirect to login, losing the error
+            const _hash = window.location.hash;
+            if (_hash) {
+                const _hp = new URLSearchParams(_hash.substring(1));
+                const _err = _hp.get('error');
+                const _desc = _hp.get('error_description');
+                if (_err) {
+                    window.location.href = '/index.html?auth_error=' + encodeURIComponent(_desc || _err);
+                    return;
+                }
+            }
+
             // Auth check
             const overlay = document.getElementById('authOverlay');
             currentSession = await requireAuth((show) => {
@@ -2065,6 +2078,27 @@
             if (!currentSession) return;
 
             setupAuthListener((session) => { currentSession = session; });
+
+            // Scope localStorage keys by user ID to prevent cross-user data leaks
+            const uid = currentSession.user.id;
+            const scopedFormKey = 'agency_audit_form_data_' + uid;
+            const scopedTableKey = 'agency_audit_table_data_' + uid;
+
+            // One-time migration: move unscoped data to scoped keys if needed
+            const oldForm = localStorage.getItem('agency_audit_form_data');
+            const oldTable = localStorage.getItem('agency_audit_table_data');
+            if (oldForm && !localStorage.getItem(scopedFormKey)) {
+                localStorage.setItem(scopedFormKey, oldForm);
+            }
+            if (oldTable && !localStorage.getItem(scopedTableKey)) {
+                localStorage.setItem(scopedTableKey, oldTable);
+            }
+            // Remove unscoped keys so they never bleed to another user
+            localStorage.removeItem('agency_audit_form_data');
+            localStorage.removeItem('agency_audit_table_data');
+
+            CONFIG.STORAGE_KEY = scopedFormKey;
+            CONFIG.TABLE_STORAGE_KEY = scopedTableKey;
 
             // Render user info in sidebar
             const adminFlag = await isAdmin(currentSession);

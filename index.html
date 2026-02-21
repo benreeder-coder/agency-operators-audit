@@ -121,6 +121,7 @@
             checkOAuthError();
             const session = await getSession();
             if (session) {
+                await ensureProfile(session);
                 const domain = session.user.email?.split('@')[1];
                 if (domain === 'builderbenai.com' || domain === 'agencyoperators.io') {
                     window.location.href = '/dashboard.html';

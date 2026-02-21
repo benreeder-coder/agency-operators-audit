@@ -16,6 +16,30 @@ async function getProfile(userId) {
     return data;
 }
 
+async function ensureProfile(session) {
+    if (!session) return;
+    const existing = await getProfile(session.user.id);
+    if (existing) return existing;
+    const user = session.user;
+    const email = user.email;
+    const { data, error } = await _supabase
+        .from('profiles')
+        .upsert({
+            id: user.id,
+            email: email,
+            full_name: user.user_metadata?.full_name || email.split('@')[0],
+            avatar_url: user.user_metadata?.avatar_url || null,
+            is_admin: email.endsWith('@builderbenai.com') || email.endsWith('@agencyoperators.io')
+        }, { onConflict: 'id' })
+        .select()
+        .single();
+    if (error) {
+        console.error('ensureProfile upsert failed:', error);
+        return null;
+    }
+    return data;
+}
+
 async function isAdmin(session) {
     if (!session) return false;
     const email = session.user.email;
@@ -52,19 +76,37 @@ function showAuthError(message) {
 }
 
 function checkOAuthError() {
+    // Check URL hash (Supabase puts OAuth errors here)
     const hash = window.location.hash;
-    if (!hash) return;
-    const params = new URLSearchParams(hash.substring(1));
-    const error = params.get('error');
-    const desc = params.get('error_description');
-    if (error) {
-        const msg = desc ? decodeURIComponent(desc.replace(/\+/g, ' ')) : error;
-        showAuthError('Sign-in failed: ' + msg);
-        history.replaceState(null, '', window.location.pathname + window.location.search);
+    if (hash) {
+        const params = new URLSearchParams(hash.substring(1));
+        const error = params.get('error');
+        const desc = params.get('error_description');
+        if (error) {
+            const msg = desc ? decodeURIComponent(desc.replace(/\+/g, ' ')) : error;
+            showAuthError('Sign-in failed: ' + msg);
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+            return;
+        }
+    }
+    // Check query params (forwarded from form.html when OAuth fails there)
+    const qp = new URLSearchParams(window.location.search);
+    const authError = qp.get('auth_error');
+    if (authError) {
+        showAuthError('Sign-in failed: ' + decodeURIComponent(authError));
+        history.replaceState(null, '', window.location.pathname);
     }
 }
 
 async function signOut() {
+    // Clear form localStorage to prevent data leaking to next user on same browser
+    const keys = Object.keys(localStorage);
+    keys.forEach(k => {
+        if (k.startsWith('agency_audit_form_data') || k.startsWith('agency_audit_table_data')) {
+            localStorage.removeItem(k);
+        }
+    });
+    localStorage.removeItem('audit_table_v2_clean');
     await _supabase.auth.signOut();
     window.location.href = '/index.html';
 }
@@ -76,6 +118,7 @@ async function requireAuth(showLoadingOverlay) {
         window.location.href = '/index.html';
         return null;
     }
+    await ensureProfile(session);
     if (showLoadingOverlay) showLoadingOverlay(false);
     return session;
 }

@@ -109,9 +109,9 @@ CREATE TRIGGER sync_team_members_on_update
     EXECUTE FUNCTION sync_team_members();
 
 -- 10. Trigger: auto-create profile on auth sign-up
+-- Uses ON CONFLICT + EXCEPTION handler so trigger failure never blocks user creation
 CREATE OR REPLACE FUNCTION handle_new_user() RETURNS TRIGGER AS $$
 BEGIN
-    -- Remove stale profile if email was reused (e.g., account deletion + re-signup)
     DELETE FROM profiles WHERE email = NEW.email AND id != NEW.id;
 
     INSERT INTO profiles (id, email, full_name, avatar_url, is_admin)
@@ -121,11 +121,20 @@ BEGIN
         COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
         NEW.raw_user_meta_data->>'avatar_url',
         NEW.email LIKE '%@builderbenai.com' OR NEW.email LIKE '%@agencyoperators.io'
-    );
+    )
+    ON CONFLICT (id) DO UPDATE SET
+        email = EXCLUDED.email,
+        full_name = EXCLUDED.full_name,
+        avatar_url = EXCLUDED.avatar_url,
+        updated_at = NOW();
+    RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user failed for %: % %', NEW.email, SQLERRM, SQLSTATE;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION handle_new_user();
