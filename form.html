@@ -998,6 +998,22 @@
             color: var(--accent-green);
         }
 
+        .autosave-indicator.cloud-saved {
+            border-color: var(--accent-green);
+        }
+
+        .autosave-indicator.save-error {
+            border-color: #ef4444;
+        }
+
+        .autosave-indicator.save-error svg {
+            color: #ef4444;
+        }
+
+        .autosave-indicator.save-error span {
+            color: #991b1b;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 900px) {
             .sidebar {
@@ -1149,11 +1165,47 @@
             transition: opacity 0.3s;
         }
         .auth-loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+        /* Company name modal */
+        .company-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.5);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10000; opacity: 0; transition: opacity 0.2s;
+        }
+        .company-modal-overlay.visible { opacity: 1; }
+        .company-modal-overlay.hidden { display: none; }
+        .company-modal {
+            background: #fff; border-radius: 12px; padding: 32px;
+            width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .company-modal h2 { margin: 0 0 8px; font-size: 1.25rem; color: var(--text-primary); }
+        .company-modal p { margin: 0 0 20px; font-size: 0.9rem; color: var(--text-secondary); }
+        .company-modal input {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 1rem; box-sizing: border-box;
+        }
+        .company-modal input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .company-modal button {
+            margin-top: 16px; width: 100%; padding: 10px; border: none; border-radius: 8px;
+            background: var(--accent-blue); color: #fff; font-size: 1rem;
+            font-weight: 600; cursor: pointer; transition: background 0.15s;
+        }
+        .company-modal button:hover { background: #2563eb; }
+        .company-modal button:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
     <div class="auth-loading-overlay" id="authOverlay">
         <img src="assets/logo.jpg" alt="Loading..." style="max-width:160px;opacity:0.6;">
+    </div>
+
+    <div class="company-modal-overlay hidden" id="companyModal">
+        <div class="company-modal">
+            <h2>Welcome! What's your company name?</h2>
+            <p>This helps us organize your audit.</p>
+            <input type="text" id="companyModalInput" placeholder="e.g., Brick Social" autofocus>
+            <button id="companyModalBtn" disabled>Continue</button>
+        </div>
     </div>
 
     <!-- Sidebar Navigation -->
@@ -1704,6 +1756,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/auth.js"></script>
     <script>
@@ -1712,7 +1766,7 @@
             STORAGE_KEY: 'agency_audit_form_data',
             TABLE_STORAGE_KEY: 'agency_audit_table_data',
             WEBHOOK_URL: 'https://agencyoperators123.app.n8n.cloud/webhook/audit-btb',
-            PARSE_FILE_URL: 'https://agencyoperators123.app.n8n.cloud/webhook/parse-audit-file',
+            PARSE_FILE_URL: '/api/parse-file',
             AUTOSAVE_DELAY: 1000,
             SUPABASE_SAVE_DELAY: 3000
         };
@@ -1769,8 +1823,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                     </svg>
                     <span class="upload-text">Upload a file to auto-populate this table</span>
-                    <span class="upload-hint">CSV, PDF, screenshot, Excel, Word — any format works</span>
-                    <input type="file" class="upload-file-input" id="${uploadId}-input">
+                    <span class="upload-hint">PNG, JPG, PDF, CSV, Excel (.xlsx), Word (.docx), or plain text</span>
+                    <input type="file" class="upload-file-input" id="${uploadId}-input" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.csv,.xlsx,.xls,.docx,.txt">
                 `;
                 this.container.appendChild(zone);
 
@@ -1976,30 +2030,70 @@
                     return;
                 }
 
+                const ext = file.name.split('.').pop().toLowerCase();
+                const supportedExts = ['png','jpg','jpeg','webp','gif','pdf','csv','xlsx','xls','docx','txt'];
+                if (!supportedExts.includes(ext)) {
+                    this._showStatus('error', `Unsupported file type ".${ext}". Use PNG, JPG, PDF, CSV, Excel, Word, or plain text.`);
+                    return;
+                }
+
                 this._showStatus('loading', `Processing "${file.name}"...`);
 
                 try {
-                    const reader = new FileReader();
-                    const fileData = await new Promise((resolve, reject) => {
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.onerror = () => reject(reader.error);
-                        reader.readAsDataURL(file);
-                    });
+                    let content, content_type, mime_type;
+
+                    if (['png','jpg','jpeg','webp','gif','pdf'].includes(ext)) {
+                        // Images and PDFs: send as base64 data URI
+                        content = await this._readAsDataURL(file);
+                        content_type = 'base64';
+                        mime_type = file.type || 'application/octet-stream';
+
+                    } else if (ext === 'csv' || ext === 'txt') {
+                        // Plain text files: read as text
+                        content = await this._readAsText(file);
+                        content_type = 'text';
+                        mime_type = file.type || 'text/plain';
+
+                    } else if (ext === 'xlsx' || ext === 'xls') {
+                        // Excel: parse with SheetJS to CSV
+                        if (typeof XLSX === 'undefined') {
+                            throw new Error('Excel parser not loaded. Refresh the page and try again.');
+                        }
+                        const arrayBuffer = await this._readAsArrayBuffer(file);
+                        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        content = XLSX.utils.sheet_to_csv(firstSheet);
+                        content_type = 'text';
+                        mime_type = 'text/csv';
+
+                    } else if (ext === 'docx') {
+                        // Word: parse with mammoth to plain text
+                        if (typeof mammoth === 'undefined') {
+                            throw new Error('Word parser not loaded. Refresh the page and try again.');
+                        }
+                        const arrayBuffer = await this._readAsArrayBuffer(file);
+                        const result = await mammoth.extractRawText({ arrayBuffer });
+                        content = result.value;
+                        content_type = 'text';
+                        mime_type = 'text/plain';
+                    }
 
                     const response = await fetch(CONFIG.PARSE_FILE_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            file_data: fileData,
+                            content,
+                            content_type,
+                            mime_type,
                             file_name: file.name,
-                            file_type: file.type,
                             table_type: this.tableType,
-                            columns: this.columns.map(c => c.key)
+                            columns: this.columns.map(c => ({ key: c.key, label: c.label }))
                         })
                     });
 
                     if (!response.ok) {
-                        throw new Error(`Server responded with ${response.status}`);
+                        const errData = await response.json().catch(() => ({}));
+                        throw new Error(errData.error || `Server responded with ${response.status}`);
                     }
 
                     const result = await response.json();
@@ -2012,8 +2106,35 @@
                     }
                 } catch (error) {
                     console.error('[EditableTable] Upload error:', error);
-                    this._showStatus('error', 'Could not process the file. You can add rows manually instead.');
+                    this._showStatus('error', error.message || 'Could not process the file. You can add rows manually instead.');
                 }
+            }
+
+            _readAsDataURL(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = () => reject(new Error('Failed to read file'));
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            _readAsText(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = () => reject(new Error('Failed to read file'));
+                    reader.readAsText(file);
+                });
+            }
+
+            _readAsArrayBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = () => reject(new Error('Failed to read file'));
+                    reader.readAsArrayBuffer(file);
+                });
             }
 
             _showStatus(type, message) {
@@ -2114,6 +2235,11 @@
 
             // Load form data (tries Supabase first, falls back to localStorage)
             await loadFormData();
+
+            // If no company name yet, prompt for it
+            if (!form.elements['companyName']?.value) {
+                await showCompanyModal();
+            }
 
             // Initialize editable tables
             orgChartTable = new EditableTable('orgChartTableContainer', [
@@ -2244,6 +2370,39 @@
             }
         }
 
+        function showCompanyModal() {
+            return new Promise(resolve => {
+                const overlay = document.getElementById('companyModal');
+                const input = document.getElementById('companyModalInput');
+                const btn = document.getElementById('companyModalBtn');
+                overlay.classList.remove('hidden');
+                requestAnimationFrame(() => overlay.classList.add('visible'));
+                input.focus();
+
+                function onInput() { btn.disabled = !input.value.trim(); }
+                function onKey(e) { if (e.key === 'Enter') submit(); }
+
+                function submit() {
+                    const name = input.value.trim();
+                    if (!name) return;
+                    form.elements['companyName'].value = name;
+                    input.removeEventListener('input', onInput);
+                    input.removeEventListener('keydown', onKey);
+                    btn.removeEventListener('click', submit);
+                    overlay.classList.remove('visible');
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                        saveFormData(); // persist immediately
+                        resolve();
+                    }, 200);
+                }
+
+                input.addEventListener('input', onInput);
+                btn.addEventListener('click', submit);
+                input.addEventListener('keydown', onKey);
+            });
+        }
+
         function saveFormData() {
             // Always save to localStorage (fast, offline backup)
             const formData = new FormData(form);
@@ -2317,7 +2476,13 @@
 
                 if (currentAuditId) {
                     // Update existing -- don't overwrite user_id (keep original creator)
-                    await _supabase.from('audits').update(auditRow).eq('id', currentAuditId);
+                    const { error: updateErr } = await _supabase.from('audits').update(auditRow).eq('id', currentAuditId);
+                    if (updateErr) {
+                        console.error('[Supabase] UPDATE failed:', updateErr.code, updateErr.message, updateErr.details);
+                        showSaveError('Cloud save failed — data saved locally');
+                    } else {
+                        showCloudSaveIndicator();
+                    }
                 } else {
                     // New audit -- set user_id and domain
                     auditRow.user_id = currentSession.user.id;
@@ -2343,6 +2508,10 @@
                     } else if (data) {
                         currentAuditId = data.id;
                         subscribeToAuditChanges();
+                        showCloudSaveIndicator();
+                    } else if (error) {
+                        console.error('[Supabase] INSERT failed:', error.code, error.message, error.details);
+                        showSaveError('Cloud save failed — data saved locally');
                     }
                 }
 
@@ -2355,7 +2524,9 @@
                     pnl_data: structuredData.financials?.pnl_data || []
                 };
 
-                console.log('[Supabase] Saved draft, audit:', currentAuditId);
+                if (currentAuditId) {
+                    console.log('[Supabase] Saved draft, audit:', currentAuditId);
+                }
             } catch (e) {
                 console.error('[Supabase] Save error:', e);
             } finally {
@@ -2733,10 +2904,35 @@
         }
 
         function showAutosaveIndicator() {
+            autosaveIndicator.classList.remove('save-error', 'cloud-saved');
+            autosaveIndicator.querySelector('span').textContent = 'Progress saved';
+            autosaveIndicator.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
             autosaveIndicator.classList.add('visible');
             setTimeout(() => {
                 autosaveIndicator.classList.remove('visible');
             }, 2000);
+        }
+
+        function showCloudSaveIndicator() {
+            autosaveIndicator.classList.remove('save-error');
+            autosaveIndicator.classList.add('cloud-saved');
+            autosaveIndicator.querySelector('span').textContent = 'Saved to cloud';
+            autosaveIndicator.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />';
+            autosaveIndicator.classList.add('visible');
+            setTimeout(() => {
+                autosaveIndicator.classList.remove('visible', 'cloud-saved');
+            }, 3000);
+        }
+
+        function showSaveError(msg) {
+            autosaveIndicator.classList.remove('cloud-saved');
+            autosaveIndicator.classList.add('save-error');
+            autosaveIndicator.querySelector('span').textContent = msg;
+            autosaveIndicator.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />';
+            autosaveIndicator.classList.add('visible');
+            setTimeout(() => {
+                autosaveIndicator.classList.remove('visible', 'save-error');
+            }, 5000);
         }
 
         // Progress Calculation
