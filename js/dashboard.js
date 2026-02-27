@@ -10,19 +10,6 @@ async function initDashboard() {
     await loadDashboardData();
     setupTabs();
     renderAuditsTab();
-
-    // Modal: close on ESC key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-    });
-
-    // Modal: close on click outside content
-    const modal = document.getElementById('auditModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-    }
 }
 
 async function loadDashboardData() {
@@ -123,7 +110,7 @@ function renderTeamTab() {
 
     const tbody = document.getElementById('teamTableBody');
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:40px;">No team members found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px;">No team members found</td></tr>';
         return;
     }
 
@@ -131,7 +118,9 @@ function renderTeamTab() {
         <tr>
             <td><strong>${esc(m.member_name || '-')}</strong></td>
             <td>${esc(m.position || '-')}</td>
+            <td>${esc(m.reports_to || '-')}</td>
             <td>${esc(m.compensation || '-')}</td>
+            <td>${esc(m.ranking || '-')}</td>
             <td>${esc(m.audits?.company_name || '-')}</td>
         </tr>
     `).join('');
@@ -183,33 +172,7 @@ function renderProgressTab() {
 }
 
 function showAuditDetail(id) {
-    const audit = allAudits.find(a => a.id === id);
-    if (!audit) return;
-
-    const modal = document.getElementById('auditModal');
-    const content = document.getElementById('modalContent');
-
-    content.innerHTML = `
-        <h3 style="margin-bottom:16px;">${esc(audit.company_name || 'Untitled Audit')}</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:14px;margin-bottom:16px;">
-            <div><strong>User:</strong> ${esc(audit.user_name || '-')}</div>
-            <div><strong>Email:</strong> ${esc(audit.user_email || '-')}</div>
-            <div><strong>Status:</strong> <span class="status-badge status-${audit.status}">${audit.status}</span></div>
-            <div><strong>Completion:</strong> ${audit.completion_percentage || 0}%</div>
-            <div><strong>Created:</strong> ${new Date(audit.created_at).toLocaleString()}</div>
-            <div><strong>Updated:</strong> ${new Date(audit.updated_at).toLocaleString()}</div>
-        </div>
-        <details style="margin-top:12px;">
-            <summary style="cursor:pointer;font-weight:600;margin-bottom:8px;">Raw Form Data</summary>
-            <pre style="background:var(--bg-input);padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:400px;overflow-y:auto;">${esc(JSON.stringify(audit.form_data, null, 2))}</pre>
-        </details>
-    `;
-
-    modal.classList.add('open');
-}
-
-function closeModal() {
-    document.getElementById('auditModal').classList.remove('open');
+    window.location.href = '/form.html?audit_id=' + encodeURIComponent(id);
 }
 
 function progressColor(pct) {

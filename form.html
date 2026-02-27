@@ -1380,13 +1380,6 @@
                         <label class="form-label" for="clientCountries">What countries are your clients in?</label>
                         <input type="text" class="form-input" id="clientCountries" name="clientCountries" placeholder="e.g., US 50%, UK 30%, EU 20%">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Org Chart</label>
-                        <p class="form-hint">Upload an org chart file or fill in the table below.</p>
-                        <div class="editable-table-section">
-                            <div id="orgChartTableContainer"></div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
@@ -1555,8 +1548,8 @@
                     <!-- Team Members Editable Table -->
                     <div class="form-group">
                         <div class="editable-table-section">
-                            <div class="section-sublabel">Team Members & Compensation</div>
-                            <p class="section-subhint">Add your team members below, or upload a file to auto-populate.</p>
+                            <div class="section-sublabel">Team Members</div>
+                            <p class="section-subhint">Add your team members, reporting structure, and compensation below, or upload a file to auto-populate.</p>
                             <div id="teamMembersTableContainer"></div>
                         </div>
                     </div>
@@ -2153,8 +2146,53 @@
             }
         }
 
+        // Backward compat: merge old separate org_chart + team_members into unified format
+        function _migrateTeamData(fd) {
+            const newTeam = fd?.operations?.team_members || [];
+            const oldOrg = fd?.strategy?.org_chart || [];
+
+            // Check if data already uses new keys (has 'name' key instead of 'team_member')
+            const isNewFormat = newTeam.length > 0 && newTeam[0].hasOwnProperty('name') && !newTeam[0].hasOwnProperty('team_member');
+            if (isNewFormat) return newTeam;
+
+            // Map old team_members format: team_member->name, pay->salary
+            const teamMap = {};
+            newTeam.forEach(m => {
+                const n = (m.team_member || m.name || '').trim();
+                if (!n) return;
+                teamMap[n.toLowerCase()] = {
+                    name: n,
+                    position: m.position || '',
+                    reports_to: m.reports_to || '',
+                    salary: m.salary || m.pay || '',
+                    ranking: m.ranking || ''
+                };
+            });
+
+            // Merge old org_chart entries (prefer team_members for salary/ranking, org_chart for reports_to)
+            oldOrg.forEach(o => {
+                const n = (o.name || '').trim();
+                if (!n) return;
+                const key = n.toLowerCase();
+                if (teamMap[key]) {
+                    if (!teamMap[key].reports_to && o.reports_to) teamMap[key].reports_to = o.reports_to;
+                    if (!teamMap[key].position && o.role) teamMap[key].position = o.role;
+                } else {
+                    teamMap[key] = {
+                        name: n,
+                        position: o.role || '',
+                        reports_to: o.reports_to || '',
+                        salary: '',
+                        ranking: ''
+                    };
+                }
+            });
+
+            return Object.values(teamMap);
+        }
+
         // Table instances (initialized in DOMContentLoaded)
-        let teamMembersTable, clientRosterTable, pnlTable, orgChartTable;
+        let teamMembersTable, clientRosterTable, pnlTable;
 
         // DOM Elements
         const form = document.getElementById('auditForm');
@@ -2224,9 +2262,13 @@
             // Render user info in sidebar
             const adminFlag = await isAdmin(currentSession);
 
-            // Admin domains don't fill forms -- redirect to dashboard
+            // Admin check: redirect to dashboard unless viewing a specific audit
             const userDomain = currentSession.user.email?.split('@')[1];
-            if (userDomain === 'builderbenai.com' || userDomain === 'agencyoperators.io') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewAuditId = urlParams.get('audit_id');
+            const isAdminUser = (userDomain === 'builderbenai.com' || userDomain === 'agencyoperators.io');
+
+            if (isAdminUser && !viewAuditId) {
                 window.location.href = 'dashboard.html';
                 return;
             }
@@ -2242,17 +2284,12 @@
             }
 
             // Initialize editable tables
-            orgChartTable = new EditableTable('orgChartTableContainer', [
-                { key: 'name', label: 'Name', placeholder: 'e.g., Sarah Johnson' },
-                { key: 'role', label: 'Role', placeholder: 'e.g., Account Manager' },
-                { key: 'reports_to', label: 'Reports To', placeholder: 'e.g., Mike Davis (CEO)' }
-            ], 'org_chart');
-
             teamMembersTable = new EditableTable('teamMembersTableContainer', [
-                { key: 'team_member', label: 'Team Member', placeholder: 'e.g., James Smith' },
-                { key: 'position', label: 'Position', placeholder: 'e.g., Creative Strategist' },
-                { key: 'pay', label: 'Pay', placeholder: 'e.g., $4,000/mo' },
-                { key: 'ranking', label: 'Ranking', placeholder: 'e.g., A, B, C' }
+                { key: 'name', label: 'Name', placeholder: 'e.g., Sarah Johnson' },
+                { key: 'position', label: 'Position', placeholder: 'e.g., Account Manager' },
+                { key: 'reports_to', label: 'Reports To', placeholder: 'e.g., Mike Davis (CEO)' },
+                { key: 'salary', label: 'Salary', placeholder: 'e.g., $5,000/mo' },
+                { key: 'ranking', label: 'Ranking', placeholder: 'A, B, or C' }
             ], 'team_members');
 
             clientRosterTable = new EditableTable('clientRosterTableContainer', [
@@ -2272,15 +2309,16 @@
             // Restore table data from Supabase if loaded from there
             if (loadedAuditData) {
                 const fd = loadedAuditData.form_data;
-                if (fd?.strategy?.org_chart?.length) orgChartTable.setData(fd.strategy.org_chart);
-                if (fd?.operations?.team_members?.length) teamMembersTable.setData(fd.operations.team_members);
+
+                // Backward compat: merge old org_chart + team_members into unified format
+                let mergedTeam = _migrateTeamData(fd);
+                if (mergedTeam.length) teamMembersTable.setData(mergedTeam);
                 if (fd?.operations?.client_roster?.length) clientRosterTable.setData(fd.operations.client_roster);
                 if (fd?.financials?.pnl_data?.length) pnlTable.setData(fd.financials.pnl_data);
 
                 // Snapshot table data for realtime merge baseline
                 lastSavedTableData = {
-                    org_chart: fd?.strategy?.org_chart || [],
-                    team_members: fd?.operations?.team_members || [],
+                    team_members: mergedTeam,
                     client_roster: fd?.operations?.client_roster || [],
                     pnl_data: fd?.financials?.pnl_data || []
                 };
@@ -2304,7 +2342,83 @@
             setupMobileMenu();
             setupSidebarNavigation();
             setupFileUploads();
+
+            // Admin read-only view: load specific audit and lock the form
+            if (isAdminUser && viewAuditId) {
+                await loadAdminAuditView(viewAuditId);
+            }
         });
+
+        // ─── Admin Read-Only View ─────────────────────────────
+        async function loadAdminAuditView(auditId) {
+            try {
+                const { data: audit, error } = await _supabase
+                    .from('audits')
+                    .select('*')
+                    .eq('id', auditId)
+                    .single();
+
+                if (error || !audit) {
+                    console.error('[Admin View] Failed to load audit:', error);
+                    alert('Could not load audit. It may have been deleted.');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                // Populate flat form fields
+                const flat = audit.form_data?._flatFields;
+                if (flat) {
+                    Object.keys(flat).forEach(key => {
+                        const el = form.elements[key];
+                        if (el) el.value = flat[key];
+                    });
+                }
+
+                // Populate editable tables
+                const fd = audit.form_data;
+                const mergedTeam = _migrateTeamData(fd);
+                if (mergedTeam.length) teamMembersTable.setData(mergedTeam);
+                if (fd?.operations?.client_roster?.length) clientRosterTable.setData(fd.operations.client_roster);
+                if (fd?.financials?.pnl_data?.length) pnlTable.setData(fd.financials.pnl_data);
+
+                // Make form read-only
+                form.querySelectorAll('input, textarea, select').forEach(el => {
+                    el.disabled = true;
+                    el.style.opacity = '0.8';
+                });
+
+                // Hide file upload zones, add-row buttons, delete buttons
+                document.querySelectorAll('.table-upload-zone, .add-row-btn, .row-delete-btn, .file-upload-zone').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                // Hide submit button
+                if (submitBtn) submitBtn.style.display = 'none';
+
+                // Disable autosave
+                clearTimeout(supabaseSaveTimeout);
+                clearTimeout(autosaveTimeout);
+                form.removeEventListener('input', saveFormData);
+
+                // Add read-only banner
+                const banner = document.createElement('div');
+                banner.style.cssText = 'position:fixed;top:0;left:260px;right:0;z-index:200;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.15);';
+                banner.innerHTML = `
+                    <span>Viewing <strong>${audit.company_name || 'Untitled'}</strong>'s audit (read-only)</span>
+                    <a href="dashboard.html" style="color:#fff;text-decoration:none;background:rgba(255,255,255,0.2);padding:6px 16px;border-radius:6px;font-size:13px;font-weight:600;">Back to Dashboard</a>
+                `;
+                document.body.prepend(banner);
+
+                // Push content down so banner doesn't overlap
+                document.querySelector('.main-container').style.paddingTop = '80px';
+
+                updateProgress();
+                console.log('[Admin View] Loaded audit:', auditId, audit.company_name);
+            } catch (e) {
+                console.error('[Admin View] Error:', e);
+                window.location.href = 'dashboard.html';
+            }
+        }
 
         // Form Data Management
         function getUserDomain() {
@@ -2449,7 +2563,6 @@
                 structuredData._flatFields = flatData;
 
                 // Strip any base64 file data to keep payload small
-                if (structuredData.strategy?.org_chart_upload?.data) delete structuredData.strategy.org_chart_upload.data;
 
                 const sectionCompletion = calculateSectionCompletion();
                 const allInputs = form.querySelectorAll('input, textarea');
@@ -2518,7 +2631,6 @@
                 // Snapshot what we just saved (for merge conflict detection)
                 lastSavedFlatFields = { ...flatData };
                 lastSavedTableData = {
-                    org_chart: structuredData.strategy?.org_chart || [],
                     team_members: structuredData.operations?.team_members || [],
                     client_roster: structuredData.operations?.client_roster || [],
                     pnl_data: structuredData.financials?.pnl_data || []
@@ -2583,7 +2695,6 @@
                 // Merge table data (apply remote if local tables haven't changed)
                 const fd = remoteAudit.form_data;
                 const tables = [
-                    { key: 'org_chart', path: fd?.strategy?.org_chart, ref: typeof orgChartTable !== 'undefined' ? orgChartTable : null, savedKey: 'org_chart' },
                     { key: 'team_members', path: fd?.operations?.team_members, ref: typeof teamMembersTable !== 'undefined' ? teamMembersTable : null, savedKey: 'team_members' },
                     { key: 'client_roster', path: fd?.operations?.client_roster, ref: typeof clientRosterTable !== 'undefined' ? clientRosterTable : null, savedKey: 'client_roster' },
                     { key: 'pnl_data', path: fd?.financials?.pnl_data, ref: typeof pnlTable !== 'undefined' ? pnlTable : null, savedKey: 'pnl_data' }
@@ -2604,7 +2715,6 @@
                 lastSavedFlatFields = { ...remoteFlatFields };
                 if (fd) {
                     lastSavedTableData = {
-                        org_chart: fd.strategy?.org_chart || [],
                         team_members: fd.operations?.team_members || [],
                         client_roster: fd.operations?.client_roster || [],
                         pnl_data: fd.financials?.pnl_data || []
@@ -2883,7 +2993,6 @@
             });
 
             // Add editable table data
-            data.strategy.org_chart = orgChartTable ? orgChartTable.getData() : [];
             data.operations.team_members = teamMembersTable ? teamMembersTable.getData() : [];
             data.operations.client_roster = clientRosterTable ? clientRosterTable.getData() : [];
             data.financials.pnl_data = pnlTable ? pnlTable.getData() : [];
@@ -3214,7 +3323,6 @@
 
                 console.log('[Submit] Payload size:', payloadSizeKB, 'KB (', payloadSizeMB, 'MB)');
                 console.log('[Submit] Tables in payload:', {
-                    org_chart: data.strategy.org_chart?.length || 0,
                     team_members: data.operations.team_members?.length || 0,
                     client_roster: data.operations.client_roster?.length || 0,
                     pnl_data: data.financials.pnl_data?.length || 0

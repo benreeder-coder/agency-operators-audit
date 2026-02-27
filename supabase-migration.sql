@@ -55,7 +55,10 @@ CREATE POLICY "own_profile" ON profiles FOR SELECT
     USING (auth.uid() = id);
 
 CREATE POLICY "admin_profiles" ON profiles FOR SELECT
-    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE));
+    USING (
+        (auth.jwt() ->> 'email') LIKE '%@builderbenai.com'
+        OR (auth.jwt() ->> 'email') LIKE '%@agencyoperators.io'
+    );
 
 CREATE POLICY "update_own_profile" ON profiles FOR UPDATE
     USING (auth.uid() = id);
@@ -68,7 +71,10 @@ CREATE POLICY "own_audits_select" ON audits FOR SELECT
     USING (user_id = auth.uid());
 
 CREATE POLICY "admin_audits_select" ON audits FOR SELECT
-    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE));
+    USING (
+        (auth.jwt() ->> 'email') LIKE '%@builderbenai.com'
+        OR (auth.jwt() ->> 'email') LIKE '%@agencyoperators.io'
+    );
 
 CREATE POLICY "insert_own_audit" ON audits FOR INSERT
     WITH CHECK (user_id = auth.uid());
@@ -81,10 +87,15 @@ CREATE POLICY "own_team_select" ON audit_team_members FOR SELECT
     USING (EXISTS (SELECT 1 FROM audits WHERE audits.id = audit_id AND audits.user_id = auth.uid()));
 
 CREATE POLICY "admin_team_select" ON audit_team_members FOR SELECT
-    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE));
+    USING (
+        (auth.jwt() ->> 'email') LIKE '%@builderbenai.com'
+        OR (auth.jwt() ->> 'email') LIKE '%@agencyoperators.io'
+    );
 
 -- 9. Trigger: sync team members from JSONB on audit insert/update
-CREATE OR REPLACE FUNCTION sync_team_members() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION sync_team_members() RETURNS TRIGGER
+SECURITY DEFINER
+AS $$
 BEGIN
     DELETE FROM audit_team_members WHERE audit_id = NEW.id;
     IF jsonb_typeof(COALESCE(NEW.form_data->'operations'->'team_members', 'null'::jsonb)) = 'array' THEN
@@ -145,14 +156,14 @@ CREATE TRIGGER on_auth_user_created
 CREATE POLICY "domain_audits_select" ON audits FOR SELECT
     USING (
         split_part(user_email, '@', 2) = split_part(
-            (SELECT email FROM auth.users WHERE id = auth.uid()), '@', 2
+            (auth.jwt() ->> 'email'), '@', 2
         )
     );
 
 CREATE POLICY "domain_audits_update" ON audits FOR UPDATE
     USING (
         split_part(user_email, '@', 2) = split_part(
-            (SELECT email FROM auth.users WHERE id = auth.uid()), '@', 2
+            (auth.jwt() ->> 'email'), '@', 2
         )
     );
 
@@ -162,7 +173,37 @@ CREATE POLICY "domain_team_select" ON audit_team_members FOR SELECT
             SELECT 1 FROM audits
             WHERE audits.id = audit_id
             AND split_part(audits.user_email, '@', 2) = split_part(
-                (SELECT email FROM auth.users WHERE id = auth.uid()), '@', 2
+                (auth.jwt() ->> 'email'), '@', 2
             )
         )
     );
+
+-- ============================================================
+-- MIGRATION: Merge Org Chart + Team Members (2026-02-27)
+-- Run this in Supabase SQL Editor AFTER initial schema exists
+-- ============================================================
+
+-- Add new columns to audit_team_members
+ALTER TABLE audit_team_members ADD COLUMN IF NOT EXISTS reports_to TEXT;
+ALTER TABLE audit_team_members ADD COLUMN IF NOT EXISTS ranking TEXT;
+
+-- Update trigger to extract from new unified team_members keys
+CREATE OR REPLACE FUNCTION sync_team_members() RETURNS TRIGGER
+SECURITY DEFINER AS $$
+BEGIN
+    DELETE FROM audit_team_members WHERE audit_id = NEW.id;
+    IF jsonb_typeof(COALESCE(NEW.form_data->'operations'->'team_members', 'null'::jsonb)) = 'array' THEN
+        INSERT INTO audit_team_members (audit_id, member_name, position, compensation, reports_to, ranking)
+        SELECT NEW.id,
+            COALESCE(m->>'name', m->>'team_member'),
+            m->>'position',
+            COALESCE(m->>'salary', m->>'pay'),
+            m->>'reports_to',
+            m->>'ranking'
+        FROM jsonb_array_elements(NEW.form_data->'operations'->'team_members') m
+        WHERE COALESCE(m->>'name', m->>'team_member') IS NOT NULL
+          AND COALESCE(m->>'name', m->>'team_member') != '';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

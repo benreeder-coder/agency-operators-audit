@@ -192,39 +192,6 @@
             margin-bottom: 12px;
         }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.open { display: flex; }
-        .modal-box {
-            background: var(--bg-white);
-            border-radius: 16px;
-            max-width: 700px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 28px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-muted);
-            line-height: 1;
-        }
-
         #dashUserInfo {
             display: flex;
             align-items: center;
@@ -326,12 +293,14 @@
                         <tr>
                             <th>Name</th>
                             <th>Position</th>
+                            <th>Reports To</th>
                             <th>Compensation</th>
+                            <th>Ranking</th>
                             <th>Company</th>
                         </tr>
                     </thead>
                     <tbody id="teamTableBody">
-                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:40px;">Loading...</td></tr>
+                        <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px;">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -341,14 +310,6 @@
             <div id="progressCards">
                 <p style="text-align:center;color:var(--text-muted);padding:40px;">Loading...</p>
             </div>
-        </div>
-    </div>
-
-    <!-- Audit Detail Modal -->
-    <div class="modal-overlay" id="auditModal">
-        <div class="modal-box">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <div id="modalContent"></div>
         </div>
     </div>
 

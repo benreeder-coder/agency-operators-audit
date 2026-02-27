@@ -1,42 +1,25 @@
 // Vercel Serverless Function: parse uploaded file content via Gemini (OpenRouter)
 
 const TABLE_PROMPTS = {
-  org_chart: {
-    context: [
-      'You are analyzing a document for an agency operations audit. The user needs to populate an ORG CHART table.',
-      'This is for a digital marketing / creative agency. The org chart tracks who reports to whom.',
-      '',
-      'The uploaded content could be ANYTHING: a messy spreadsheet screenshot, an org chart image, a list of employees in a Word doc, a CSV export from HR software, handwritten notes, or even a paragraph describing the team structure.',
-      '',
-      'Your job is to INFER the best data for each column using context clues:',
-      '- "Name": Full name of the person. Look for proper nouns, email prefixes, signatures, @mentions.',
-      '- "Role": Their job title or function. Infer from context if not explicit (e.g., someone managing others is likely a "Director" or "Manager"). Use standard titles when possible.',
-      '- "Reports To": Who this person reports to. Infer from hierarchy, indentation, grouping, or context. If unclear, use "" (empty string).',
-      '',
-      'DEDUPLICATION: If the same person appears multiple times (e.g., in different departments or roles), output them ONCE using their most senior role. Match by first name — if only first names are available, assume the same first name is the same person. For example, if "Toby" appears as "Head of Growth" and also as "Setter/Closer", keep only "Toby - Head of Growth".',
-      '',
-      'IMPORTANT: Extract EVERY unique person you can identify, even if some fields require guessing. A best guess is better than omitting the row. The user will review and edit after.',
-    ].join('\n'),
-    example: '{"rows":[{"name":"Jane Smith","role":"CEO","reports_to":""},{"name":"John Doe","role":"Marketing Director","reports_to":"Jane Smith"}]}'
-  },
   team_members: {
     context: [
       'You are analyzing a document for an agency operations audit. The user needs to populate a TEAM MEMBERS table.',
-      'This is for a digital marketing / creative agency. The table tracks employees, their roles, compensation, and performance.',
+      'This is for a digital marketing / creative agency. The table tracks employees, their roles, reporting structure, compensation, and performance.',
       '',
       'The uploaded content could be ANYTHING: a payroll export, a screenshot of a project management tool, an HR spreadsheet, a Word doc listing the team, a PDF org chart, or even informal notes about staff.',
       '',
       'Your job is to INFER the best data for each column using context clues:',
-      '- "Team Member": Full name. Look for proper nouns, usernames, email addresses, @mentions.',
+      '- "Name": Full name of the person. Look for proper nouns, usernames, email addresses, @mentions.',
       '- "Position": Job title or role. Infer from context (e.g., if someone handles "Google Ads" they are likely a "Paid Media Specialist").',
-      '- "Pay": Compensation amount. Could appear as salary, hourly rate, monthly rate, or annual. Normalize to monthly if possible (e.g., "$65,000/yr" becomes "$5,417/mo"). If only a number with no context, keep as-is.',
+      '- "Reports To": Who this person reports to. Infer from hierarchy, indentation, grouping, or context. If unclear, use "" (empty string).',
+      '- "Salary": Compensation amount. Could appear as salary, hourly rate, monthly rate, or annual. Normalize to monthly if possible (e.g., "$65,000/yr" becomes "$5,417/mo"). If only a number with no context, keep as-is.',
       '- "Ranking": Performance tier. Map to A/B/C if possible. Look for ratings, scores, performance notes, or any evaluative language. "Top performer" = A, "meets expectations" = B, "needs improvement" = C. If no performance data exists, use "".',
       '',
       'DEDUPLICATION: If the same person appears multiple times (e.g., in different departments, pods, or roles), output them ONCE using their most senior role. Match by first name — if only first names are available, assume the same first name is the same person. For example, if "Toby" appears as "Head of Growth" and also as "Newsletter/Social Media", keep only "Toby - Head of Growth".',
       '',
       'IMPORTANT: Extract EVERY unique person you can identify, even if some fields require guessing. A best guess is better than omitting the row. The user will review and edit after.',
     ].join('\n'),
-    example: '{"rows":[{"team_member":"James Rivera","position":"Paid Media Strategist","pay":"$5,500/mo","ranking":"A"},{"team_member":"Sarah Chen","position":"SEO Specialist","pay":"$4,800/mo","ranking":"B"}]}'
+    example: '{"rows":[{"name":"James Rivera","position":"Paid Media Strategist","reports_to":"Sarah Chen","salary":"$5,500/mo","ranking":"A"},{"name":"Sarah Chen","position":"Director of Marketing","reports_to":"Mike Davis (CEO)","salary":"$8,000/mo","ranking":"A"}]}'
   },
   clients: {
     context: [
