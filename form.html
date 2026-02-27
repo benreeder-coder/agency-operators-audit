@@ -2275,12 +2275,15 @@
 
             renderUserInfo(document.getElementById('userInfoContainer'), currentSession, adminFlag);
 
-            // Load form data (tries Supabase first, falls back to localStorage)
-            await loadFormData();
+            // Admin viewing a specific audit skips normal data load + company prompt
+            if (!(isAdminUser && viewAuditId)) {
+                // Load form data (tries Supabase first, falls back to localStorage)
+                await loadFormData();
 
-            // If no company name yet, prompt for it
-            if (!form.elements['companyName']?.value) {
-                await showCompanyModal();
+                // If no company name yet, prompt for it
+                if (!form.elements['companyName']?.value) {
+                    await showCompanyModal();
+                }
             }
 
             // Initialize editable tables
